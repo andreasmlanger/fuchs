@@ -1,0 +1,78 @@
+@media screen {
+
+  .draggable-items {
+    display: flex;
+    justify-content: center;
+    margin: 1rem;
+    transition: opacity 0.5s;
+  }
+
+  .draggable {
+    font-size: 1.8rem;
+    display: flex;
+    color: #465C69;
+    align-items: center;
+    justify-content: center;
+    margin: 0rem 0.5rem;
+    cursor: move;
+    transition: opacity 0.2s;
+  }
+
+  .draggable:hover {
+    opacity: 0.5;
+  }
+
+  .matching-pairs {
+    transition: opacity 0.5s;
+  }
+
+  .matching-pair {
+    height: 4rem;
+    width: 32rem;
+    margin: 1rem auto;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .matching-pair span {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    user-select: none;
+  }
+
+  .label {
+    width: 22rem;
+    font-size: 1.8rem;
+  }
+
+  .droppable {
+    width: 20rem;
+    font-size: 1.8rem;
+    background-color: #fff;
+    border: 3px dashed #111;
+    transition: 0.2s;
+  }
+
+  .droppable-hover {
+    background-color: #bee3f0;
+    transform: scale(1.1);
+  }
+
+  .dropped {
+    border-style: solid;
+  }
+
+  .dragged {
+    user-select: none;
+    opacity: 0.1;
+    cursor: default;
+  }
+
+  .draggable.dragged:hover {
+    opacity: 0.1;
+  }
+
+} /* end @media */

@@ -1,0 +1,20 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Cycle {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'cycle/style.css' %}">
+
+<!-- Bokeh JS -->
+{% include "main/bokeh.html" %}
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4><span class="pointer category" onclick="changeRouteType(this, 'planned')">Planned</span> | <span class="pointer category" style="color: gray" onclick="changeRouteType(this, 'done')">Done</span></h4>
+    <hr>
+    <div id="main">
+        {% include "cycle/main.html" %}
+    </div>
+</body>
+{% endblock %}

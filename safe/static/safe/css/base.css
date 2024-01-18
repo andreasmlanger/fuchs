@@ -1,0 +1,11 @@
+@media screen {
+
+  .scrollbar {
+    overflow: auto;
+    height: calc(100vh - 300px);
+    min-height: 200px;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+} /* end @media */

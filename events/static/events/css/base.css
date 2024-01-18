@@ -1,0 +1,68 @@
+@media screen {
+
+  .grid-container {
+    display: grid;
+    grid-gap: 16px;
+    grid-template-columns: repeat(auto-fit, 350px);
+  }
+
+  .grid-item {
+    color: #fefefe;
+    padding: 10px;
+    border-radius: 5px;
+    transition: transform .1s;
+  }
+
+  .grid-item:hover {
+    transform: scale(1.03);
+  }
+
+  .circle {
+    border-radius: 5px;
+    text-align: center;
+    background-color: #2B2D42;
+  }
+
+  .pointer:hover {
+    cursor: pointer;
+    color: #F6CA83;
+  }
+
+  .hide, .removed {
+    display: none;
+  }
+
+  a {
+    color: #fefefe;
+  }
+
+  a:hover {
+    color: #F6CA83;
+    text-decoration: none;
+  }
+
+  .block {
+    display: inline-block;
+    width: 305px;
+    margin-top: 10px;
+  }
+
+  .small-icon {
+    padding-left: 10px;
+    font-size: 10pt
+  }
+
+  .input-group {
+    margin-right: 10px;
+  }
+
+  td {
+    height: 30px;
+  }
+
+  #message {
+    position: absolute;
+    right: 90px
+  }
+
+} /* end @media */

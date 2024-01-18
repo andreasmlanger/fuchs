@@ -1,0 +1,58 @@
+<!-- Message -->
+<div id="message"></div>
+<!-- Loader -->
+<div id="loader" class="loader"><div></div><div></div><div></div><div></div></div>
+<!-- Table -->
+<div id="stockTable" style="display: none">
+    <div id="toolbar" class="btn-group" role="group">
+        <button type="submit" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Scroll Down" onclick="scrollDown()"><i class="fas fa-arrow-down"></i></button>
+        <button type="submit" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Refresh" onclick="refresh()"><i class="fas fa-sync"></i></button>
+        <button type="submit" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Download" onclick="downloadStocks('{{stocks}}')"><i class="fas fa-save"></i></button>
+    </div>
+    <table
+        id="table"
+        data-toolbar="#toolbar"
+        data-search="true"
+        data-show-fullscreen="true"
+        data-show-columns="true"
+        data-show-columns-toggle-all="true"
+        data-click-to-select="true"
+        data-minimum-count-columns="0"
+        data-pagination="false"
+        data-show-footer={{show_footer}}
+        data-detail-view="false">
+    </table>
+</div>
+<br>
+<!-- No stocks case -->
+<div id="noStocksText" style="display: none">
+    <br>
+    <br>
+    <p>You don't have any stocks in your {{stocks}} yet.</p>
+    <!-- Upload -->
+    <form id="uploadForm" method="post" enctype="multipart/form-data" action="javascript:void(0)" class="form-group">
+        {% csrf_token %}
+        <div class="input-group upload-input" style="width:250px">
+            <div class="custom-file">
+                <input type="file" accept=".xlsx" name="document" class="custom-file-input" id="chooseFileName" onchange="this.form.submit()">
+                <label class="custom-file-label" for="chooseFileName">Upload xlsx file</label>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- Bokeh plots -->
+<div class="row">
+    <div class="col-sm-{{col1}}">
+        <div id="bokeh">
+            {{ div | safe }}
+            {{ script | safe }}
+        </div>
+    </div>
+    <div class="col-sm-{{col2}}">
+        <div id="bokeh2">
+            {{ div2 | safe }}
+            {{ script2 | safe }}
+        </div>
+    </div>
+</div>
+<br>

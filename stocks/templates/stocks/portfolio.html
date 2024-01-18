@@ -1,0 +1,323 @@
+{% extends 'stocks/base.html' %}
+{% load static %}
+{% block title %} Portfolio {% endblock %}
+
+{% block content %}
+<body>
+    <h4>Portfolio | <a href="/watchlist">Watchlist</a></h4>
+    <hr>
+    <!-- Add stock form -->
+    <div class="form-popup form-container" id="formContainer">
+        <form id="addStockForm" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="form-group input-container">
+                    <label for="name-input" class="col-form-label">Name</label>
+                    <input id="name-input" class="form-control" type="text" placeholder="e.g. Tesla">
+                </div>
+                <div class="form-group input-container">
+                    <label for="symbol-input" class="col-form-label">Ticker Symbol <span class="highlight" data-toggle="tooltip" data-placement="top" title="Find Symbol" onclick="searchYahoo()"><i class="fas fa-search"></i></span></label>
+                    <input id="symbol-input" class="form-control" type="text" placeholder="e.g. TL0.F">
+                </div>
+                <div class="form-group input-container">
+                    <label for="date-input" class="col-form-label">Order Date</label>
+                    <input id="date-input" class="form-control"  type="text" placeholder="date of order" onclick="openDatePicker()">
+                </div>
+                <div class="form-group input-container">
+                    <label for="price-input" class="col-form-label">Order Price</label>
+                    <input id="price-input" class="form-control" type="text" placeholder="price in €">
+                </div>
+                <div class="form-group input-container">
+                    <label for="volume-input" class="col-form-label">Volume</label>
+                    <input id="volume-input" class="form-control" type="text" placeholder="# of shares">
+                </div>
+                <div class="form-group btn-container">
+                    <button id="add-button" type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Add stock" ><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% include "stocks/main.html" with stocks='portfolio' show_footer='true' col1=6 col2=6 %}
+</body>
+<script src="{% static 'stocks/index.js' %}"></script>
+<script>
+    const CSFRtoken = '{{ csrf_token }}'
+
+    var $table = $('#table')
+    var data = {{table|safe}}
+    var symbols = data.map(row => row['symbol']);
+
+    function convertDate(x) {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+        var d = parseInt(x.split(',')[0].split(' ')[1]),
+        m, y = parseInt(x.split(' ')[2])
+
+        for (var i = 0; i < months.length; i++) {
+            if (x.startsWith(months[i])) {
+                m = i
+                break
+            }
+        }
+        return new Date(y, m, d)
+    }
+
+    let simplepicker = new SimplePicker({
+        zIndex: 10
+    });
+
+    simplepicker.compactMode()
+
+    simplepicker.on('submit', (date, readableDate) => {
+        document.getElementById('date-input').value = readableDate
+    });
+
+    function openDatePicker() {
+        simplepicker.open();
+    }
+
+    function checkAndGetInput() {
+        var symbol = document.getElementById('symbol-input').value.trim()
+        var name = document.getElementById('name-input').value.trim()
+        var date = document.getElementById('date-input').value.trim()
+        var price = parseFloat(document.getElementById('price-input').value.trim().replace(',', '.'))
+        var volume = parseInt(document.getElementById('volume-input').value.trim())
+
+        if (convertDate(date) > new Date()) {
+            highlight('date-input', 'red')
+            displayMessage('Date cannot lie in the future!', 'danger')
+            return false
+        }
+
+        var flag = false
+
+        if (!symbol) {
+            flag = true
+            highlight('symbol-input', 'red')
+        } else {
+            highlight('symbol-input', 'green')
+        }
+
+        if (!name) {
+            flag = true
+            highlight('name-input', 'red')
+        } else {
+            highlight('name-input', 'green')
+        }
+
+        if (!date) {
+            flag = true
+            highlight('date-input', 'red')
+        } else {
+            highlight('date-input', 'green')
+        }
+
+        if (!price || isNaN(price)) {
+            flag = true
+            highlight('price-input', 'red')
+        } else {
+            highlight('price-input', 'green')
+        }
+
+        if (!volume || isNaN(volume)) {
+            flag = true
+            highlight('volume-input', 'red')
+        } else {
+            highlight('volume-input', 'green')
+        }
+
+        if (flag) {
+            displayMessage('Missing or invalid input', 'danger')
+            return false
+        } else {
+            highlight('symbol-input', '')
+            highlight('name-input', '')
+            highlight('date-input', '')
+            highlight('price-input', '')
+            highlight('volume-input', '')
+
+            document.getElementById('symbol-input').value = ''
+            document.getElementById('name-input').value = ''
+            document.getElementById('date-input').value = ''
+            document.getElementById('price-input').value = ''
+            document.getElementById('volume-input').value = ''
+
+            return [symbol, name, date, price, volume]
+        }
+    }
+
+    $("#addStockForm").on('submit', function(e){
+        e.preventDefault();
+        var inputArray = checkAndGetInput()
+
+        if (inputArray) {
+            submit_ajax('/portfolio', {'stock_to_add': inputArray[0],
+                                       'name': inputArray[1],
+                                       'order_date': inputArray[2],
+                                       'order_price': inputArray[3],
+                                       'volume': inputArray[4]})
+        }
+    });
+
+    function removeStock(symbol, number) {
+        submit_ajax('/portfolio', {'stock_to_remove': symbol,
+                                   'number': number})
+    }
+
+    function refresh() {
+        submit_ajax('/portfolio', {'task': 'refresh'})
+    }
+
+    function initTable() {
+        $table.bootstrapTable('destroy').bootstrapTable({
+            data: data,
+            columns: [
+                [{
+                    field: 'Checked',
+                    checkbox: true,
+                    align: 'center',
+                    valign: 'middle'
+                }, {
+                    title: 'Name',
+                    field: 'name',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                }, {
+                    title: 'Symbol',
+                    field: 'symbol',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                }, {
+                    title: 'Order Date',
+                    field: 'order_date',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: dateFormatter,
+                }, {
+                    title: 'Order Price',
+                    field: 'order_price',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: euroFormatter,
+                }, {
+                    title: 'Volume',
+                    field: 'volume',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                }, {
+                    title: 'Investment',
+                    field: 'investment',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: euroFormatter,
+                    footerFormatter: footerSumFormatter,
+                }, {
+                    title: 'Price',
+                    field: 'today',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: euroFormatter,
+                }, {
+                    title: 'Today',
+                    field: 'return_yesterday',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: percentageFormatter,
+                    footerFormatter: footerTodayPercentageFormatter,
+                }, {
+                    title: 'Overall',
+                    field: 'return_overall',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: percentageFormatter,
+                    footerFormatter: footerOverallPercentageFormatter,
+                }, {
+                    title: 'Value',
+                    field: 'value',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: euroFormatter,
+                    footerFormatter: footerSumFormatter,
+                }, {
+                    title: 'Profit',
+                    field: 'profit',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: euroColorFormatter,
+                    footerFormatter: footerSumFormatter,
+                }, {
+                    title: '',
+                    field: 'operate',
+                    align: 'center',
+                    valign: 'middle',
+                    clickToSelect: false,
+                    events: window.operateEvents,
+                    formatter: operateFormatter,
+                    width: 40,
+                }]
+            ],
+            formatNoMatches: function () {
+                return 'No matching stocks found'
+            }
+        })
+
+        $table.bootstrapTable('hideColumn', 'symbol')
+        $table.bootstrapTable('hideColumn', 'order_price')
+        $table.bootstrapTable('hideColumn', 'investment')
+
+        if (isMobile()) {
+            $table.bootstrapTable('hideColumn', 'order_date')
+            $table.bootstrapTable('hideColumn', 'volume')
+            $table.bootstrapTable('hideColumn', 'today')
+            $table.bootstrapTable('hideColumn', 'return_overall')
+            $table.bootstrapTable('hideColumn', 'value')
+            $table.bootstrapTable('hideColumn', 'profit')
+        }
+
+        $table.on('all.bs.table', function () {
+            $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'});
+        })
+
+        updateTable()
+    }
+
+    function operateFormatter(value, row, index) {
+        return [
+            '<a class="delete" data-toggle="tooltip" href="javascript:void(0)" title="Remove shares" style="color: #5a6268">',
+            '<i class="fas fa-trash"></i>',
+            '</a>',
+        ].join('')
+    }
+
+    window.operateEvents = {
+        'click .delete': function (e, value, row, index) {
+            var symbol = row['symbol']
+            var max = row['volume']
+            bootbox.prompt({
+                title: "How many shares do you want to remove?",
+                value: max,
+                min: 0,
+                max: max,
+                inputType: 'number',
+                callback: function (number) {
+                    if (number > 0) {
+                        removeStock(symbol, number)
+                    }
+                }
+            });
+        },
+    }
+</script>
+
+{% endblock %}

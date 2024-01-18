@@ -1,0 +1,20 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Travel {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'travel/style.css' %}">
+
+<!-- Bokeh JS -->
+{% include "main/bokeh.html" %}
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4><a href="/travel">Travel</a></h4>
+    <hr>
+    <div id="main">
+        {% include "travel/main.html" %}
+    </div>
+</body>
+{% endblock %}

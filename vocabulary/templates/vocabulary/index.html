@@ -1,0 +1,54 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Vocabulary {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'vocabulary/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Vocabulary</h4>
+    <hr>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card text-white mb-3 zoom" style="background-color: {% if words %} #F45B69 {% else %} #0B6E4F {% endif %}">
+                <div class="card-header"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">{% if words == 1 %} Study {{words}} word {% elif words %} Study {{words}} words {% else %} Nothing to do right now {% endif %}</h5>
+                    <p class="card-text">{% if words %} Practice your vocabulary now. {% else %} Come back later. {% endif %}<a class="white {% if words %} stretched-link {% endif %}" href="/vocabulary/study"></a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-white bg-dark mb-3 zoom">
+                <div class="card-header"><i class="fa-solid fa-plus"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">New vocabulary</h5>
+                    <p class="card-text">Add new vocabulary.<a class="white stretched-link" href="/vocabulary/new"></a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-white bg-dark mb-3 zoom">
+                <div class="card-header"><i class="fa-solid fa-list"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">Word list</h5>
+                    <p class="card-text">See all your vocabulary.<a class="white stretched-link" href="/vocabulary/words"></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card text-white mb-3 zoom" style="background-color: #574D68">
+                <div class="card-header"><i class="fa-solid fa-puzzle-piece"></i></div>
+                <div class="card-body">
+                    <h5 class="card-title">Portuguese Verbs</h5>
+                    <p class="card-text">Practice verb conjugation.<a class="white stretched-link" href="/vocabulary/verbs"></a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}

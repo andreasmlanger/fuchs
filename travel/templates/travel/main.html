@@ -1,0 +1,125 @@
+{% load static %}
+{% load custom_tags %}
+
+
+<div id="articles"></div>
+<div class="row flex-row-reverse">
+    <div class="col-md-3">
+        <div class="card text-black mb-3">
+            <div class="card-body wordcloud">
+                {% for year in years %}
+                    <a class="year" href="/travel/20{{year}}">'{{year}}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="card text-black mb-3">
+            <div class="card-body wordcloud">
+                {% for country, font_size in wordcloud %}
+                    <a href="/travel/{{country|lower|replace_whitespace_dash}}" style="font-size: {{font_size}}pt">{{country}}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        {% for d in data %}
+            <div class="card text-black mb-3">
+                <div class="card-body">
+                    <h4 style="margin-bottom: 15px">
+                        <i class="fa-solid fa-earth-{{d.Continent}}" data-toggle="tooltip" data-placement="top" title="{{d.Date}}"></i>
+                        <a href="/travel/{{d.Date|cut:'/'}}">{{d.Title}}</a>
+                        {% if d.NextDate %}
+                            <a href="/travel/{{d.NextDate|cut:'/'}}" style="float: right;"><i class="fa-solid fa-angles-right" data-toggle="tooltip" data-placement="top" title="Next"></i></a>
+                        {% endif %}
+                    </h4>
+                    <hr>
+                    {% if d.Map %}
+                        <div style="margin-bottom: 10px;" class="map" data-map="{{d.Map}}" data-map-url="{{d.MapURL}}">
+                            <div style="display: inline-block; margin-right: 20px" id="map_{{d.Map}}" >
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </div>
+                            <div style="display: inline-block; overflow: hidden;" id="bokeh_{{d.Map}}"></div>
+                        </div>
+                    {% endif %}
+                    {% for c in d.Content %}
+                        <p class="card-text">
+                            {% if 'p' in c %}
+                                {% if c.p|slice:":5" == 'Oder:' %}
+                                    <i style="color: #519E8A">{{c.p}}</i>
+                                {% else %}
+                                    {{c.p}}
+                                {% endif %}
+                            {% else %}
+                                <img class="framed" src="{{c.img}}" width="{{c.width}}" style="max-width: 100%">
+                            {% endif %}
+                        </p>
+                    {% endfor %}
+                    {% for tag in d.Tags %}
+                        <span class="badge"><a href="/travel/{{tag|lower}}">{{tag}}</a></span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    var map_loading;
+    var maps_to_load = Array.from(document.getElementsByClassName('map'));
+
+    function fetchMap(m) {
+        var map = m.getAttribute("data-map")
+        var map_url = m.getAttribute("data-map-url")
+        let data = new FormData();
+        data.append('task', 'fetch');
+        data.append('map', map);
+        data.append('map_url', map_url);
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+        .then(response => response.json())
+        .then(data => {
+            try {
+                $('#map_' + map).html(data.map);
+                $('#bokeh_' + map).html(data.bokeh);
+            } catch (error) {
+                console.log(error);
+                fetchMap(m);
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            fetchMap(m);
+        });
+        map_loading = null;
+        removeItem(maps_to_load, m);
+    }
+
+    function loadMaps() {
+        if (!map_loading) {
+            const mapToLoad = maps_to_load.find((map) => map.getBoundingClientRect().top > 0);
+            if (mapToLoad) {
+                map_loading = mapToLoad;
+                fetchMap(map_loading);
+            }
+        }
+    }
+
+    function removeItem(array, item) {
+        const index = array.indexOf(item);
+        if (index > -1) {
+            array.splice(index, 1);
+        }
+        return array;
+    }
+
+    document.addEventListener('DOMContentLoaded', function(event) {
+        setInterval(function() {
+            loadMaps();
+        }, 1000);
+    })
+</script>
