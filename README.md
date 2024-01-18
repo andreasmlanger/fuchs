@@ -1,5 +1,4 @@
 # Fuchs
-
 This extensive web project is built with Django and consists of several apps to provide a diverse range of functionalities, from scraping events to tracking stocks, and even playing a PyGame that has been converted to WebAssembly code.
 
 ## Apps
@@ -37,6 +36,7 @@ A travel blog app, loading posts and images from an AirTable.
 ### Blog
 Another blog app.
 
+## License
 This project is licensed under the MIT License. Feel free to use, modify, and distribute the code for your own purposes.
 
 Happy coding!
