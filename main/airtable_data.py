@@ -17,8 +17,13 @@ def fetch_json_data_from_media_folder(request, app, model, blog_id=None):
     """
     Opens json file from media folder and loads content, e.g. for Travel or Blog apps
     """
-    assert_json_data_is_up_to_date(request, app, model, get_airtable(app))
-    file_path = os.path.join(settings.MEDIA_ROOT, f'{app}/data.json')
+    app_media_folder = os.path.join(settings.MEDIA_ROOT, f'{app}')
+    update = False
+    if not os.path.exists(app_media_folder):
+        os.makedirs(app_media_folder)
+        update = True
+    assert_json_data_exists_and_is_up_to_date(request, app, model, get_airtable(app), update)
+    file_path = os.path.join(app_media_folder, 'data.json')
     with open(file_path, 'r') as f:
         data = json.load(f)
     if blog_id:
@@ -26,13 +31,13 @@ def fetch_json_data_from_media_folder(request, app, model, blog_id=None):
     return data
 
 
-def assert_json_data_is_up_to_date(request, app, model, airtable):
+def assert_json_data_exists_and_is_up_to_date(request, app, model, airtable, update=False):
     """
     Airtable Free Tier only allows 1000 API requests per month = ~30 per day
     Attachment URLs remain unchanged for at least 1 hour
     """
     data_instance = get_data_model_instance(model)
-    if datetime.now() - get_last_update_time(request, data_instance) > timedelta(hours=1):
+    if update or datetime.now() - get_last_update_time(request, data_instance) > timedelta(hours=1):
         update_travel_json(request, app, data_instance, airtable)  # update if json data is older than 1 hour
 
 
