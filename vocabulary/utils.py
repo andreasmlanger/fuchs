@@ -1,5 +1,6 @@
 from datetime import timedelta
-from main.region import get_region
+
+LANGUAGES = ['jp', 'pt', 'en', 'fr', 'es']
 
 WAITING_TIME = {
     0: timedelta(hours=0),
@@ -15,15 +16,10 @@ WAITING_TIME = {
     10: timedelta(days=256),
 }
 
-# https://www.flaticon.com/packs/countrys-flags
-LANGUAGES = ['en', 'fr', 'es', 'pt', 'jp', 'de']
-
 BATCH_SIZE = 20  # batch size for study session
 BATCH_SIZE_VERBS = 10  # batch size for study session
 
 
-def get_languages(request):
-    city = request.user.profile.city
-    languages = LANGUAGES.copy()
-    languages.remove(get_region(city)['language'])
-    return languages
+def get_languages():
+    # https://www.flaticon.com/packs/countrys-flags
+    return LANGUAGES

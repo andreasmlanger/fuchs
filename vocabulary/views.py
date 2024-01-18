@@ -32,7 +32,7 @@ def study(request):
             return HttpResponse()
     update_notification(request.user, 'vocabulary', time_delta=timedelta(minutes=5))  # reset notification
     return render(request, 'vocabulary/study.html',
-                  {'vocab': load_vocab(request.user, to_study=True), 'languages': get_languages(request),
+                  {'vocab': load_vocab(request.user, to_study=True), 'languages': get_languages(),
                    'avatar': get_avatar(request)})
 
 
@@ -70,8 +70,8 @@ def new(request):
         v.delay_due()
         return HttpResponse()
     return render(request, 'vocabulary/new.html',
-                  {'vocab': load_vocab(request.user), 'languages': get_languages(request),
-                   'avatar': get_avatar(request)})
+                  {'vocab': load_vocab(request.user), 'languages': get_languages(),
+                   'default_language': LANGUAGES[0], 'avatar': get_avatar(request)})
 
 
 @login_required
@@ -91,8 +91,8 @@ def words(request):
             v.save()
         return HttpResponse()
     return render(request, 'vocabulary/words.html',
-                  {'vocab': load_vocab(request.user), 'languages': get_languages(request),
-                   'avatar': get_avatar(request)})
+                  {'vocab': load_vocab(request.user), 'languages': get_languages(),
+                   'default_language': LANGUAGES[0], 'avatar': get_avatar(request)})
 
 
 def send_vocab_notification_email(user):

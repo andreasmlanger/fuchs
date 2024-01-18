@@ -21,7 +21,7 @@
         </form>
         <span style="margin-top: 5px; margin-left: 20px">
             {% for lang in languages %}
-                <img id="flag-{{lang}}" data-language='{{lang}}' class="flag" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != 'en' %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')">
+                <img id="flag-{{lang}}" data-language='{{lang}}' class="flag" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')">
             {% endfor %}
         </span>
     </div>
@@ -33,7 +33,7 @@
             <th style="width: 40px"></th>
         </tr>
         {% for v in vocab %}
-            <tr id="row{{v.id}}" class="table-row {% if v.language != 'en' %}lang-hide{% endif %}" data-word-1="{{v.word_1}}" data-word-2="{{v.word_2}}" data-language="{{v.language}}">
+            <tr id="row{{v.id}}" class="table-row {% if v.language != default_language %}lang-hide{% endif %}" data-word-1="{{v.word_1}}" data-word-2="{{v.word_2}}" data-language="{{v.language}}">
                 <td class="editable foreign" data-id="{{v.id}}" data-vocab="1">{{v.word_1}}</td>
                 <td class="editable" data-id="{{v.id}}" data-vocab="2">{{v.word_2}}</td>
                 <td style="text-align: center">{% if v.level == 10 %}<i class="fa-solid fa-crown"></i>{% else %}{{v.level}}{% endif %}</td>
