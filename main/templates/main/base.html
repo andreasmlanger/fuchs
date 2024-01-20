@@ -40,7 +40,12 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                 <li class="dropdown-item"><a href="/account"><div class="link">Account</div></a></li>
-                <li class="dropdown-item"><a href="/logout"><div class="link">Logout</div></a></li>
+                <li class="dropdown-item">
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <span class="link" onclick="this.parentNode.submit();">Logout</span>
+                    </form>
+                </li>
             </ul>
         </div>
     </div>
