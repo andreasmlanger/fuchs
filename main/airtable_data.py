@@ -48,7 +48,7 @@ def get_data_model_instance(model):
 
 
 def is_local(request):
-    return request.get_host() in ('localhost', '127.0.0.1')
+    return request.get_host() in ('localhost', '127.0.0.1', '127.0.0.1:8000')
 
 
 def get_last_update_time(request, instance):
