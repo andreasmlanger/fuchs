@@ -76,8 +76,7 @@ def scrape_kleinanzeigen(k):
     return items
 
 
-def retrieve_urlaubspiraten_json_object(soup):
-    js_snippet = soup.find_all('script', attrs={'type': 'text/javascript'})[0].text
+def retrieve_urlaubspiraten_json_object(js_snippet):
     json_start_index = js_snippet.find('{', js_snippet.find('__STATE__'))
     json_end_index = js_snippet.rfind('}') + 1
     json_part = js_snippet[json_start_index:json_end_index]
@@ -101,7 +100,12 @@ def find_urlaubspiraten_posts(json_obj):
 def scrape_urlaubspiraten(keywords):
     url = get_url('urlaubspiraten')
     soup = get_soup(url)
-    json_obj = retrieve_urlaubspiraten_json_object(soup)
+    js_elements = soup.find_all('script', attrs={'type': 'text/javascript'})
+    if len(js_elements) == 0:
+        print('Error loading JS information from Urlaubspiraten!')
+        return []  # page not properly loaded, abort
+    js_snippet = js_elements[0].text
+    json_obj = retrieve_urlaubspiraten_json_object(js_snippet)
     posts = find_urlaubspiraten_posts(json_obj)
     items = []
     first_datetime = None  # will be set if there's a new post
