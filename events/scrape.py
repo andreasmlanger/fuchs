@@ -106,7 +106,9 @@ def extract_relevant_information(data, website, city=None):
 def filter_only_valid_locations(data, city):
     filtered_data = []
     for i in range(len(data)):
-        if isinstance(data[i]['location'], list):
+        if 'location' not in data[i]:
+            continue
+        elif isinstance(data[i]['location'], list):
             for location in data[i]['location']:
                 if 'name' in location:
                     data[i]['location'] = location  # remove virtual locations
