@@ -16,6 +16,8 @@ def index(request, keyword=None):
         m = create_map_html(df, icon=icon, width=300, height=200)
         return JsonResponse({'map': m, 'bokeh': b})
     data = fetch_json_data_from_media_folder(request, app='travel', model=Data)
+    if not request.user.is_superuser:
+        data = [d for d in data if d['Date'] > '2018']  # filter for non-superusers!
     data = add_next_page(data)
     years = get_years(data)
     wordcloud = sorted(get_wordcloud(data).items())

@@ -36,14 +36,13 @@
         <div class="btn-group dropdown">
             <button id="accountButton" class="btn btn-default" type="button" data-toggle="dropdown">
                 <img src="{% if avatar %} data:image/png;base64, {{avatar}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail">
-                <span class="caret"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                 <li class="dropdown-item"><a href="/account"><div class="link">Account</div></a></li>
                 <li class="dropdown-item">
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
-                        <span class="link" onclick="this.parentNode.submit();">Logout</span>
+                        <span style="cursor: pointer" class="link" onclick="this.parentNode.submit();">Logout</span>
                     </form>
                 </li>
             </ul>
@@ -64,10 +63,10 @@
                 <li><a href="/portfolio" data-toggle="tooltip" data-placement="right" title="Stocks"><i class="fas fa-socks"></i></a></li>
                 <li><a href="/frog" data-toggle="tooltip" data-placement="right" title="Frog"><i class="fas fa-frog"></i></a></li>
                 <li><a href="/cookbook" data-toggle="tooltip" data-placement="right" title="Cookbook"><i class="fa-solid fa-utensils"></i></a></li>
+                <li><a href="/travel" data-toggle="tooltip" data-placement="right" title="Travel"><i class="fa-solid fa-plane"></i></a></li>
                 {% if user.is_superuser %}
                     <!-- This is only for me -->
                     <li><a href="/cycle" data-toggle="tooltip" data-placement="right" title="Cycle"><i class="fa-solid fa-bicycle"></i></a></li>
-                    <li><a href="/travel" data-toggle="tooltip" data-placement="right" title="Travel"><i class="fa-solid fa-plane"></i></a></li>
                     <li><a href="/blog" data-toggle="tooltip" data-placement="right" title="Blog"><i class="fa-solid fa-feather"></i></a></li>
                 {% endif %}
             </ul>
