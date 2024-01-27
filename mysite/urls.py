@@ -19,6 +19,7 @@ urlpatterns = [
     path('', include('safe.urls')),
     path('', include('scrape.urls')),
     path('', include('stocks.urls')),
+    path('', include('trailer.urls')),
     path('', include('travel.urls')),
     path('', include('vocabulary.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

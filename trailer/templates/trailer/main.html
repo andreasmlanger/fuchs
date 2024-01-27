@@ -1,0 +1,36 @@
+<p>Double-click to view trailer in new tab!</p>
+<div id="grid" class="grid-container">
+    {% for t in trailers %}
+        <div id="gridItem{{t.id}}" class="grid-item" style="background-image: url({{t.img_url}}); {% if t.muted %} filter: grayscale(100%) {% endif %}" onclick="toggleGrayscale('{{t.id}}')" ondblclick="openLink('{{t.url}}')"></div>
+    {% endfor %}
+</div>
+
+<script>
+    function openLink(url) {
+        window.open(url, '_blank');
+    }
+
+    function toggleGrayscale(id) {
+        let data = new FormData();
+        data.append('id', id);
+
+        element = document.getElementById('gridItem' + id);
+
+        if (element.style.filter === "grayscale(100%)") {
+            element.style.filter = "none";
+            data.append('muted', 0);
+        } else {
+            element.style.filter = "grayscale(100%)";
+            data.append('muted', 1);
+        }
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+    }
+</script>

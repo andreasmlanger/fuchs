@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'safe',
     'scrape',
     'stocks',
+    'trailer',
     'travel',
     'vocabulary',
 ]
