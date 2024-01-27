@@ -10,7 +10,9 @@ function hideAllTooltips() {
 
 function enableDropdowns() {
     $(".dropdown-menu span").click(function(){
-        $(this).parents(".dropdown").find('.btn').html($(this).text());
+        if (!$(this).parents(".dropdown").find('.btn').is("#accountButton")) {  // don't do this for the account button!
+            $(this).parents(".dropdown").find('.btn').html($(this).text());
+        }
     });
 }
 
