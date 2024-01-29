@@ -35,10 +35,10 @@ def load_trailers(user):
             new_trailer.save()
             t['muted'], t['id'] = False, new_trailer.pk
 
-    # Delete obsolete trailers
+    # Delete obsolete trailers if they are muted
     apple_ids = set([t['id'] for t in apple_trailers])
     for t in user_trailers:
-        if t['id'] not in apple_ids:
+        if t['id'] not in apple_ids and t['muted']:
             user.trailer.get(id=t['id']).delete()
 
     return apple_trailers
