@@ -23,7 +23,7 @@ def load_trailers(user):
 
     # Trailers saved by user
     values = ['id', 'title', 'url', 'img_url', 'muted']
-    user_trailers = user.trailer.all().values(*values)
+    user_trailers = user.trailer.all().values(*values).order_by('-created_at')
     user_trailer_dict = dict(zip([t['title'] for t in user_trailers], [(t['muted'], t['id']) for t in user_trailers]))
 
     # Add new Apple trailers to database
@@ -35,10 +35,10 @@ def load_trailers(user):
             new_trailer.save()
             t['muted'], t['id'] = False, new_trailer.pk
 
-    # Delete obsolete trailers if they are muted
+    # Delete obsolete trailers if they have been muted
     apple_ids = set([t['id'] for t in apple_trailers])
     for t in user_trailers:
         if t['id'] not in apple_ids and t['muted']:
             user.trailer.get(id=t['id']).delete()
 
-    return apple_trailers
+    return user_trailers
