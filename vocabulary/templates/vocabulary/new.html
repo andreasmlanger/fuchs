@@ -94,6 +94,10 @@
     function updatePage() {
         document.getElementsByName('word-1')[0].placeholder = getLanguageName();
     }
+
+    $(document).ready(function(){
+        changeLanguage('jp');  // activate Hiragana input as japanese is default language
+    })
 </script>
 
 {% endblock %}
