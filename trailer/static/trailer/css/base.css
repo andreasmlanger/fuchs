@@ -2,7 +2,7 @@
 
   .grid-container {
     display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-columns: repeat(auto-fill, minmax(208px, 1fr));
   }
 
   .grid-item {
@@ -11,7 +11,7 @@
     transition: transform .1s;
     background-size: cover;
     background-position: center;
-    height: 120px;
+    height: 117px;
     margin: 10px;
   }
 
