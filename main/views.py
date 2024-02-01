@@ -5,7 +5,7 @@ from django.shortcuts import render
 from .forms import UpdateProfile
 from .scheduler import run_scheduling
 from .utils import *
-from .weather import get_weather
+from .weather import get_weather_forecast, get_weather_now
 
 
 @login_required
@@ -70,6 +70,14 @@ def account(request):
         apps[app]['notification'] = user.notifications.get(app=app).email
 
     # Weather API
-    weather = get_weather(user.profile.city)
+    weather_now = get_weather_now(user.profile.city)
 
-    return render(request, 'main/account.html', profile | weather | {'apps': apps})
+    return render(request, 'main/account.html', profile | weather_now | {'apps': apps})
+
+
+@login_required
+def weather(request):
+    # Weather API
+    weather_forecast = get_weather_forecast(request.user.profile.city)
+
+    return render(request, 'main/weather.html', weather_forecast | {'avatar': get_avatar(request)})

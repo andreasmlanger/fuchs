@@ -13,8 +13,9 @@
             <input type="image" src="{% if avatar %} data:image/png;base64, {{avatar}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail"/>
         </div>
         <div class="col-1">
-            <div class="weather-icon-frame">
-                <img src="{{icon_url}}" data-toggle="tooltip" data-placement="left" title="{{description}}, {{temperature}}"/>
+            <div style="margin-top: 234px;">
+                <a href="weather">
+                     <img src="{% static icon_static_url %}" alt="{{ description }}" width="50px" data-toggle="tooltip" data-placement="left" title="{{description}}, {{temperature}}°C"></a>
             </div>
         </div>
         <div class="col-8">
