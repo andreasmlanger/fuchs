@@ -57,7 +57,7 @@ def get_weather_forecast(city):
     if response.status_code == 200:
         data = response.json()
         forecast = []
-        for d in data['daily'][:7]:  # next 7 days
+        for d in data['daily']:
             w = {
                 'weekday': timestamp_to_date(d['dt'], style='%a')[:2],
                 'sunrise': timestamp_to_date(d['sunrise'], style='%H:%M'),
@@ -73,9 +73,11 @@ def get_weather_forecast(city):
                 'uvi': d['uvi'],
             }
             forecast.append(w)
-        highest_temperature = max([w['max'] for w in forecast])
+        temp_hi = max([w['max'] for w in forecast])
+        temp_lo = min([w['min'] for w in forecast])
         for w in forecast:
-            w['bar_offset'] = (highest_temperature + 10 - w['max']) * 10
+            w['bar_offset_t'] = (temp_hi - w['max']) * 10
+            w['bar_offset_b'] = (w['min'] - temp_lo) * 10
     else:
         forecast = 'Error'
 
