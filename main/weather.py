@@ -14,7 +14,7 @@ def get_weather_now(city):
     if response.status_code == 200:
         data = response.json()
         description = data['weather'][0]['main']
-        icon_static_url = get_static_weather_icon_url(data['weather'][0]['icon'])
+        icon_static_url = get_static_weather_icon_url(data['weather'][0]['icon']).replace('n.png', 'd.png')
         temperature = format_temperature_in_celsius(data['main']['temp'])
     else:
         description = 'Error'
