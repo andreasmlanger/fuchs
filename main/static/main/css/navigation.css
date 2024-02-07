@@ -72,7 +72,7 @@
     width: 80px;
     margin: -67px 0 0 -32px;
     padding: 32px;
-    padding-top: 80px;
+    padding-top: 75px;
     background: transparent;
     list-style-type: none;
     transform: translate(-100%, 0);
@@ -81,7 +81,7 @@
 
   #menu li {
     width: 28px;
-    padding: 2px 0;
+    padding: 1px 0;
     text-align: center;
     font-size: 22px;
   }

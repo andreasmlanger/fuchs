@@ -1,0 +1,10 @@
+{% for b in books %}
+    <div class="grid-item" style="background-image: url('media/books/{{b.cover_filename}}')" onclick="window.open('https://drive.google.com/file/d/{{b.epub_id}}', '_blank')"></div>
+{% endfor %}
+<div id="add-new-cover-grid-item" class="grid-item" onclick="openModal()"><i class="fa-solid fa-square-plus"></i></div>
+
+{% if message %}
+    <script>
+        showMessage('{{message}}', 'danger');
+    </script>
+{% endif %}
