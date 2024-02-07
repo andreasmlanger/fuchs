@@ -13,7 +13,8 @@
     transition: transform .1s;
     background-size: cover;
     background-position: center;
-    height: 150px;
+    padding-top: 60%;
+    padding-bottom: 60%;
   }
 
   .grid-item i {
