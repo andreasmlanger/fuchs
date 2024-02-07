@@ -18,27 +18,28 @@ def fetch_json_data_from_media_folder(request, app, model, blog_id=None):
     Opens json file from media folder and loads content, e.g. for Travel or Blog apps
     """
     app_media_folder = os.path.join(settings.MEDIA_ROOT, f'{app}')
-    update = False
-    if not os.path.exists(app_media_folder):
+    path_to_json_file = os.path.join(app_media_folder, 'data.json')
+    data_instance = get_data_model_instance(model)  # get or create model instance
+    json_missing = False
+    if not os.path.isfile(path_to_json_file):
         os.makedirs(app_media_folder)
-        update = True
-    assert_json_data_exists_and_is_up_to_date(request, app, model, get_airtable(app), update)
-    file_path = os.path.join(app_media_folder, 'data.json')
-    with open(file_path, 'r') as f:
+        json_missing = True
+    json_is_obsolete = check_if_json_data_is_obsolete(request, data_instance)
+    if json_missing or json_is_obsolete:
+        update_travel_json(request, app, data_instance, get_airtable(app))
+    with open(path_to_json_file, 'r') as f:
         data = json.load(f)
     if blog_id:
         return [d for d in data if d['Id'] == blog_id]
     return data
 
 
-def assert_json_data_exists_and_is_up_to_date(request, app, model, airtable, update=False):
+def check_if_json_data_is_obsolete(request, data_instance):
     """
     Airtable Free Tier only allows 1000 API requests per month = ~30 per day
-    Attachment URLs remain unchanged for at least 1 hour
+    Attachment URLs remain unchanged for at least 1 hour, then they become obsolete
     """
-    data_instance = get_data_model_instance(model)
-    if update or datetime.now() - get_last_update_time(request, data_instance) > timedelta(hours=1):
-        update_travel_json(request, app, data_instance, airtable)  # update if json data is older than 1 hour
+    return datetime.now() - get_last_update_time(request, data_instance) > timedelta(hours=1)
 
 
 def get_data_model_instance(model):
