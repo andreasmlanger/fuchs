@@ -23,7 +23,7 @@ def upload_cover(request):
     message = ''
     if request.method == 'POST':
         cover = request.FILES.get('cover')
-        cover_image = uploaded_image_to_base64(cover, w=200, h=320)  # 1.6X aspect ratio
+        cover_image = uploaded_image_to_base64(cover, w=200, h=300)  # 1.5X aspect ratio
         drive_url = request.POST.get('drive_url')
         title, author = cover.name.split('.')[0].split(' - ')
         epub_id = drive_url.split('/')[5]  # just the GDrive id of the file
