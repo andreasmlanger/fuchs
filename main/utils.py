@@ -28,21 +28,36 @@ def decode_bytes(b):
     return b.tobytes().decode('utf-8')
 
 
-def get_avatar_image(upload):
+def uploaded_image_to_base64(upload, w=192, h=192):
     im = Image.open(BytesIO(upload.file.getvalue()))
-    im = crop_and_resize_image(im)
+    im = crop_and_resize_image(im, w, h)
     return base64.b64encode(im)
 
 
-def crop_and_resize_image(im):
-    width, height = im.size  # get dimensions
-    new_dim = min(width, height)
-    left = (width - new_dim) / 2
-    top = (height - new_dim) / 2
-    right = (width + new_dim) / 2
-    bottom = (height + new_dim) / 2
+def crop_and_resize_image(im, w, h):
+    orig_w, orig_h = im.size  # original width and height
+    aspect_ratio_orig = orig_w / float(orig_h)
+    aspect_ratio_desired = w / float(h)
+
+    if aspect_ratio_orig > aspect_ratio_desired:
+        # Image is wider than desired aspect ratio, crop sides
+        new_w = int(orig_h * aspect_ratio_desired)
+        crop_w = orig_w - new_w
+        left = crop_w
+        top = 0
+        right = orig_w - crop_w
+        bottom = orig_h
+    else:
+        # Image is taller than desired aspect ratio, crop top and bottom
+        new_h = int(orig_w / aspect_ratio_desired)
+        crop_h = orig_h - new_h
+        left = 0
+        top = crop_h
+        right = orig_w
+        bottom = orig_h - crop_h
+
     im = im.crop((left, top, right, bottom))
-    im = im.resize((192, 192))
+    im = im.resize((w, h), Image.LANCZOS)
     buffered = BytesIO()
     im.save(buffered, format='PNG')
     return buffered.getvalue()

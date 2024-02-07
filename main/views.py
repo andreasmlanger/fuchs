@@ -34,7 +34,7 @@ def account(request):
             user.profile.city = form.cleaned_data['city']
             user.email = form.cleaned_data['email']
             if request.FILES.get('avatar'):
-                user.profile.avatar = get_avatar_image(form.cleaned_data['avatar'])
+                user.profile.avatar = uploaded_image_to_base64(form.cleaned_data['avatar'])
             user.save()
 
             for app in APPS.keys():
