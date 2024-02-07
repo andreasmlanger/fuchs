@@ -81,7 +81,11 @@
                     <div class="col-1">
                         <div class="form-group">
                             {% csrf_token %}
-                            <button onclick="deleteAccount()" class="btn" type="button"><i class="fas fa-skull" data-toggle="tooltip" data-placement="left" title="Delete Account"></i></button>
+                            {% if user.is_superuser %}
+                                <button onclick="vacuumDatabase()" class="btn" style="padding: 2px" type="button"><i class="fa-solid fa-snowplow" data-toggle="tooltip" data-placement="left" title="Vacuum Database"></i></button>
+                            {% else %}
+                                <button onclick="deleteAccount()" class="btn" style="padding: 2px" type="button"><i class="fas fa-skull" data-toggle="tooltip" data-placement="left" title="Delete Account"></i></button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -91,17 +95,28 @@
 </body>
 
 <script>
+    function createInput(name) {
+        var input = document.createElement("input");
+        input.setAttribute("type", "hidden");
+        input.setAttribute("name", name);
+        input.setAttribute("value", "1");
+        return input;
+    }
+
     function deleteAccount() {
         bootbox.confirm("Are you really sure that you want to delete your account?", function(result){
             if (result == true) {
-                var input = document.createElement("input");
-                input.setAttribute("type", "hidden");
-                input.setAttribute("name", "delete_account");
-                input.setAttribute("value", "1");
+                var input = createInput('delete_account');
                 document.getElementById("registrationForm").appendChild(input);
                 document.getElementById("registrationForm").submit()
             }
         })
+    }
+
+    function vacuumDatabase() {
+        var input = createInput('vacuum_database');
+        document.getElementById("registrationForm").appendChild(input);
+        document.getElementById("registrationForm").submit()
     }
 
     document.addEventListener('DOMContentLoaded', function(event) {

@@ -1,7 +1,10 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import connection
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+import os
 from .forms import UpdateProfile
 from .scheduler import run_scheduling
 from .utils import *
@@ -27,6 +30,15 @@ def account(request):
                 return HttpResponseRedirect('/account')
             user.delete()
             return HttpResponseRedirect('/login')
+        elif request.POST.get('vacuum_database'):
+            try:
+                vacuum_sql_database()
+                clear_media_folder()
+                messages.add_message(request, messages.SUCCESS, 'Database successfully vacuumed!')
+            except Exception as ex:
+                print(ex, 'Vacuum SQlite3 command not possible')
+                messages.add_message(request, messages.WARNING, 'Error while shrinking database!')
+            return HttpResponseRedirect('/account')
         form = UpdateProfile(request.POST, request.FILES)
         if form.is_valid():
             user.first_name = form.cleaned_data['first_name']
@@ -81,3 +93,19 @@ def weather(request):
     weather_forecast = get_weather_forecast(request.user.profile.city)
 
     return render(request, 'main/weather.html', weather_forecast | {'avatar': get_avatar(request)})
+
+
+def vacuum_sql_database():
+    cursor = connection.cursor()
+    cursor.execute('VACUUM')  # shrinking sqlite database file by freeing up space
+    cursor.close()
+    print('Database successfully vacuumed!')
+
+
+def clear_media_folder():
+    media_root = settings.MEDIA_ROOT
+    for root, dirs, files in os.walk(media_root):
+        for file_name in files:
+            file_path = os.path.join(root, file_name)
+            print('Deleted', file_path)
+            os.remove(file_path)

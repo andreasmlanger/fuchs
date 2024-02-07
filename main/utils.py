@@ -59,7 +59,7 @@ def crop_and_resize_image(im, w, h):
     im = im.crop((left, top, right, bottom))
     im = im.resize((w, h), Image.LANCZOS)
     buffered = BytesIO()
-    im.save(buffered, format='PNG')
+    im.save(buffered, format='PNG', optimize=True)  # PNG has larger file size but better quality
     return buffered.getvalue()
 
 
