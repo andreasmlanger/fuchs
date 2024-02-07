@@ -20,10 +20,9 @@ def fetch_json_data_from_media_folder(request, app, model, blog_id=None):
     app_media_folder = os.path.join(settings.MEDIA_ROOT, f'{app}')
     path_to_json_file = os.path.join(app_media_folder, 'data.json')
     data_instance = get_data_model_instance(model)  # get or create model instance
-    json_missing = False
-    if not os.path.isfile(path_to_json_file):
-        os.makedirs(app_media_folder)
-        json_missing = True
+    json_missing = not os.path.isfile(path_to_json_file)
+    if json_missing:
+        os.makedirs(app_media_folder, exist_ok=True)
     json_is_obsolete = check_if_json_data_is_obsolete(request, data_instance)
     if json_missing or json_is_obsolete:
         update_travel_json(request, app, data_instance, get_airtable(app))
