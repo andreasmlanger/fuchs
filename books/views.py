@@ -20,7 +20,7 @@ def get_books(user):
     books = user.books.all().values(*values).order_by('created_at')
     covers = set()
     for b in books:
-        b['cover_filename'] = f'{b["title"]} - {b["author"]}.jpg'
+        b['cover_filename'] = f'{b["title"]} - {b["author"]}.jpg'.replace(' ', '_')
         covers.add(b['cover_filename'])
     clean_up_media_folder(covers)
     return books
@@ -55,7 +55,7 @@ def save_new_book(user, title, author, epub_id, cover):
     new_book.save()
 
     # Save book cover to media folder
-    cover_file = os.path.join(MEDIA_FOLDER, cover.name)
+    cover_file = os.path.join(MEDIA_FOLDER, cover.name.replace(' ', '_'))
     with open(cover_file, 'wb') as f:
         for chunk in cover.chunks():
             f.write(chunk)
