@@ -59,7 +59,7 @@ def get_weather_forecast(city):
         forecast = []
         for d in data['daily']:
             w = {
-                'weekday': timestamp_to_date(d['dt'], style='%a')[:2],
+                'weekday': timestamp_to_date(d['dt'], style='%a %d'),
                 'sunrise': timestamp_to_date(d['sunrise'], style='%H:%M'),
                 'sunset': timestamp_to_date(d['sunset'], style='%H:%M'),
                 'min': format_temperature_in_celsius(d['temp']['min']),
