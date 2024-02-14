@@ -122,7 +122,7 @@ def scrape_urlaubspiraten(keywords):
         # Scrape json object and store information in dictionary
         item = {'Title': x['title'],
                 'Subtitle': x['subtitle'],
-                'Price': x['pricing']['amount'] if 'amount' in x else 0,
+                'Price': x['pricing']['amount'] if 'amount' in x['pricing'] else None,
                 'Url': f'https://www.urlaubspiraten.de/fluege/{x["slug"]}',
                 }
         if world_in_keywords or any(k.keyword in item['Title'] + item['Subtitle'] for k in keyword_list):
@@ -141,7 +141,8 @@ def send_scraping_email(user, website, items):
     else:
         subject = 'Urlaubspiraten!'
         for i in items:
-            html += f'<a href="{i["Url"]}">{i["Title"]}</a> - {i["Price"]}<br>'
+            price_info = f' - {i["Price"]}' if i['Price'] is not None else ''
+            html += f'<a href="{i["Url"]}">{i["Title"]}</a>{price_info}<br>'
     html += '</body></html>'
     send_email(user.email, subject, html)
 
