@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
+from datetime import datetime, timedelta
 from main.utils import get_avatar
 from .models import Trailer
 from .scrape import scrape_trailers_from_apple
@@ -18,12 +19,14 @@ def index(request):
 
 
 def load_trailers(user):
-    # Trailers from Apple
+    # Get trailers from Apple
     apple_trailers = scrape_trailers_from_apple()
 
-    # Trailers saved by user
-    values = ['id', 'title', 'url', 'img_url', 'muted']
+    # Get trailers stored in user database
+    values = ['id', 'title', 'url', 'img_url', 'muted', 'created_at']
     user_trailers = user.trailer.all().values(*values).order_by('-created_at')
+
+    # Create dictionary of trailers with title as key and (muted, id) as value
     user_trailer_dict = dict(zip([t['title'] for t in user_trailers], [(t['muted'], t['id']) for t in user_trailers]))
 
     # Add new Apple trailers to database
@@ -38,7 +41,11 @@ def load_trailers(user):
     # Delete obsolete trailers if they have been muted
     apple_ids = set([t['id'] for t in apple_trailers])
     for t in user_trailers:
-        if t['id'] not in apple_ids and t['muted']:
-            user.trailer.get(id=t['id']).delete()
+        if t['id'] not in apple_ids and t['muted'] and is_older_than_one_year(t['created_at']):
+            user.trailer.get(id=t['id']).delete()  # clean up after one year
 
     return user_trailers
+
+
+def is_older_than_one_year(d):
+    return datetime.now() - d > timedelta(days=365)
