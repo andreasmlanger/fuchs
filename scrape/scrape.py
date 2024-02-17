@@ -122,7 +122,7 @@ def scrape_urlaubspiraten(keywords):
         # Scrape json object and store information in dictionary
         item = {'Title': x['title'],
                 'Subtitle': x['subtitle'],
-                'Price': x['pricing']['amount'] if 'pricing' in x else None,
+                'Price': x['pricing']['amount'] if x['pricing'] else None,
                 'Url': f'https://www.urlaubspiraten.de/fluege/{x["slug"]}',
                 }
         if world_in_keywords or any(k.keyword in item['Title'] + item['Subtitle'] for k in keyword_list):
