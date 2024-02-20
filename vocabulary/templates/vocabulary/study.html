@@ -26,13 +26,13 @@
                 <form id="submitWordForm" method="post" novalidate>
                     {% csrf_token %}
                     <div class="input-group mb-3">
-                        <input id="word-input" name="word-typed" type="text" class="form-control" placeholder="Type your answer" autocomplete="off" required autofocus>
+                        <input id="word-input" style="font-size: 20px" name="word-typed" type="text" class="form-control" placeholder="Type your answer" autocomplete="off" required autofocus>
                         <div class="input-group-append">
                             <button id="submit-button" type="submit" class="btn btn-dark" disabled><i class="fa-solid fa-arrow-right"></i></button>
                         </div>
                     </div>
                 </form>
-                <div id="message"></div>
+                <div id="message" style="font-size: 20px"></div>
             </div>
             <div class="col-2">
                 <h2 style="text-align: center"><i class="fa-solid fa-clipboard-list" data-toggle="tooltip" data-placement="top" title="Remaining" ></i> <span id="remaining">{{vocab|length}}</span></h2>
