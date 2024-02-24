@@ -20,8 +20,8 @@
         <form id="addVocabForm" method="post" novalidate>
             {% csrf_token %}
             <div class="input-group mb-3">
-                <input id="word-1" name="word-1" type="text" class="form-control" autocomplete="off" placeholder="Japanese" required autofocus>
-                <input id="word-2" name="word-2" type="text" class="form-control" autocomplete="off" placeholder="Translation" required>
+                <input id="word-1" style="font-size: 20px" name="word-1" type="text" class="form-control" autocomplete="off" placeholder="Japanese" required autofocus>
+                <input id="word-2" style="font-size: 20px" name="word-2" type="text" class="form-control" autocomplete="off" placeholder="Translation" required>
                 <div class="input-group-append">
                     <button type="submit" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Add"><i class="fa-solid fa-plus"></i></button>
                 </div>
