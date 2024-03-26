@@ -37,15 +37,13 @@
             <button id="accountButton" class="btn btn-default" type="button" data-toggle="dropdown">
                 <img src="{% if avatar %} data:image/png;base64, {{avatar}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail">
             </button>
-            <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                <li class="dropdown-item"><a href="/account"><div class="link">Account</div></a></li>
-                <li class="dropdown-item">
-                    <form method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <span style="cursor: pointer" class="link" onclick="this.parentNode.submit();">Logout</span>
-                    </form>
-                </li>
-            </ul>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li class="dropdown-item link"><a href="/account">Account</a></li>
+                    <li class="dropdown-item link" onclick="this.parentNode.parentNode.submit();">Logout</li>
+                </ul>
+            </form>
         </div>
     </div>
     <nav role="navigation">
