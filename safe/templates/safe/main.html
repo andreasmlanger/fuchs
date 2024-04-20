@@ -1,0 +1,18 @@
+{% load static %}
+{% load custom_tags %}
+
+<tr>
+
+</tr>
+{% for m in messages %}
+<tr>
+  <td style="width: 50px">
+      <img src="{% if profile_pictures|hashed:m.user %} data:image/png;base64, {{profile_pictures|hashed:m.user}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail" width="40" height="40" data-toggle="tooltip" data-placement="top" title="{{m.created_at}}">
+  </td>
+  <td>
+      {% for message in m.message %}
+          {{ message }}<br/>
+      {% endfor %}
+  </td>
+</tr>
+{% endfor %}

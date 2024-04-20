@@ -1,0 +1,143 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Events {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'events/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Events</h4>
+    <hr>
+    <div id="loader" class="loader"><div></div><div></div><div></div><div></div></div>
+    <div id="message"></div>
+    <div id="main">
+        {% include "events/main.html" %}
+    </div>
+</body>
+<script src="{% static 'events/index.js' %}"></script>
+<script>
+    function remove(id) {
+        const title = "Are you sure you want to remove this event?";
+        showModalConfirm(title, function() {
+            document.getElementById("gridItem" + id).classList.add('removed');
+
+            let data = new FormData();
+            data.append('id', id);
+            data.append('task', 'remove');
+            sendToBackend(data);
+        });
+    }
+
+    function attend(id) {
+        let item = document.getElementById("gridItem" + id);
+        let isAttending = item.getAttribute("data-attending");
+        let isNew = parseInt(item.getAttribute("data-new"));
+        isAttending = 1 - isAttending;
+        item.setAttribute("data-attending", isAttending);
+        item.style.backgroundColor = isAttending ? '{{color.attending}}' : (isNew ? '{{color.new}}' : '{{color.else}}');
+
+        let data = new FormData();
+        data.append('id', id);
+        data.append('task', 'attend');
+        data.append('attending', isAttending);
+        sendToBackend(data);
+    }
+
+    function blacklist(value, type) {
+        var item;
+        if (type == 0) {
+            item = "event";
+        } else if (type == 1) {
+            item = "location";
+        } else {
+            item = "group";
+        }
+        const title = "Add " + item + " to blacklist?";
+        showModalPrompt(title, value, function(result) {
+            if (result !== ''){
+                removeFromGrid(type, result);
+
+                let data = new FormData();
+                data.append('task', 'blacklist');
+                data.append('type', type);
+                data.append('name', result);
+                sendToBackend(data);
+            }
+        })
+    }
+
+    function removeFromGrid(type, name) {
+        var gridItems = document.getElementsByClassName("grid-item");
+        for (item of gridItems) {
+            if ((type == 0 && item.getAttribute("data-event").includes(name)) || (type == 1 && item.getAttribute("data-location").includes(name)) || (type == 2 && item.getAttribute("data-group").includes(name))) {
+                item.classList.add('removed');
+            }
+        };
+    }
+
+    function sendToBackend(data) {
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+    }
+
+    function scrapeEvents(events='{}') {
+        document.getElementById('scrapeButton').disabled = true;
+        document.getElementById('loader').style.display = 'block';
+
+        let data = new FormData();
+        data.append('task', 'scrape');
+        data.append('events', events);
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+        .then(response => response.json())
+        .then(data => {
+            var newEventsNumber = parseInt(data.number);
+            refreshGrid(newEventsNumber);
+        })
+    }
+
+    function updateGridOnSearch() {
+        var gridItems = document.getElementsByClassName("grid-item");
+        var txt = document.getElementById("searchInput").value.toLowerCase();
+        for (item of gridItems) {
+            let loc = item.getAttribute("data-location").toLowerCase();
+            let eve = item.getAttribute("data-event").toLowerCase();
+            (loc.includes(txt) || eve.includes(txt)) ? item.classList.remove('hide') : item.classList.add('hide');
+        };
+    }
+
+    function refreshGrid(newEventsNumber) {
+        $.ajax({
+            url: "{% url 'refresh_events_grid' %}",
+            type: 'GET',
+            success: function(data) {
+                $('#main').html(data);
+                document.getElementById('loader').style.display = 'none';
+                displayNotification(newEventsNumber);
+                enableTooltips();
+            }
+        });
+    };
+
+    document.addEventListener('DOMContentLoaded', function(event) {
+        if ({{is_due}}) {
+            scrapeEvents();
+        }
+    });
+</script>
+{% endblock %}

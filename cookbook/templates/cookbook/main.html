@@ -1,0 +1,67 @@
+{% load custom_tags %}
+
+{% for dish, url in dishes %}
+    <div class="card text-black mb-3">
+        {% if not ingredients %}
+            <a href="cookbook/{{dish|lower|replace_whitespace_dash}}">
+        {% endif %}
+            <div class="card-body" style="padding: 0">
+                <div class="row">
+                    <div class="col" style="max-width: 120px">
+                        <img src="{{url}}">
+                    </div>
+                    <div class="col" style="padding: 20px">
+                        <h5>{{dish}}</h5>
+                    </div>
+                </div>
+            </div>
+        {% if not ingredients %}
+            </a>
+        {% endif %}
+    </div>
+{% endfor %}
+
+{% if ingredients %}
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="card text-black mb-3">
+                <div class="card-body">
+                    {% for ingredient in ingredients %}
+                        <p class="clickable"><strong>{{ingredient.number}} {{ingredient.unit}}</strong> {{ingredient.item}} {% if ingredient.details %}(<em>{{ingredient.details}}</em>){% endif %}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <div class="card text-black mb-3">
+                <div class="card-body">
+                    {% for step in steps %}
+                        <p class="clickable"><strong>{{ forloop.counter }}.</strong> {{step}}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    const items = Array.from(document.getElementsByClassName("clickable"));
+
+    items.forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (items.includes(e.target.parentElement)) {
+                if (e.target.parentElement.style.textDecoration) {
+                    e.target.parentElement.style.removeProperty('text-decoration');
+                } else {
+                    e.target.parentElement.style.setProperty('text-decoration', 'line-through');
+                }
+            } else {
+                if (e.target.style.textDecoration) {
+                    e.target.style.removeProperty('text-decoration');
+                } else {
+                    e.target.style.setProperty('text-decoration', 'line-through');
+                }
+            }
+        }, false);
+    });
+</script>

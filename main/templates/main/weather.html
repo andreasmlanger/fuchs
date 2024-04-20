@@ -1,0 +1,90 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Weather {% endblock %}
+
+{% block header %}
+<style>
+    th {
+      width: 125px;
+    }
+
+    th, td {
+      text-align: center;
+      padding: 10px;
+      border-right: 1px dashed gray;
+    }
+
+    th:last-child,
+    td:last-child {
+      border-right: none;
+    }
+
+    td {
+      position: relative;
+    }
+
+    .temperature-bar {
+      position: relative;
+      text-align: center;
+      width: 20px;
+      background-color: #fdd020;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Weather</h4>
+    <hr>
+    {% csrf_token %}
+    <table>
+        <tr>
+            {% for w in weather_forecast %}
+                <th>{{ w.weekday }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for w in weather_forecast %}
+                <td>
+                    <div>
+                        <img src="{% static w.icon_static_url %}" alt="{{ w.description }}" width="40px" data-toggle="tooltip" data-placement="bottom" title="{{ w.description }}">
+                    </div>
+                </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for w in weather_forecast %}
+                <td>
+                    {% if w.rain %}
+                        <div><i class="fa-solid fa-umbrella"></i> {{ w.rain }} mm</div>
+                    {% elif w.uvi > 5 %}
+                        <div><i class="fa-solid fa-sun" style="color: red"></i> {{ w.uvi }} UV</div>
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for w in weather_forecast %}
+                <td>
+                    <div style="height: {{ w.bar_offset_t }}px"></div>
+                    <div>{{ w.max }}°C</div>
+                    <div class="temperature-bar" style="height: {{ w.bar_height }}px;"></div>
+                    <div>{{ w.min }}°C</div>
+                    <div style="height: {{ w.bar_offset_b }}px"></div>
+                </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for w in weather_forecast %}
+                <td>
+                    <div><i class="fa-solid fa-sun"></i> {{ w.sunrise }}</div>
+                    <div><i class="fa-solid fa-moon"></i> {{ w.sunset }}</div>
+                </td>
+            {% endfor %}
+        </tr>
+    </table>
+</body>
+
+{% endblock %}

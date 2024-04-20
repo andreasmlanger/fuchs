@@ -1,0 +1,106 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} New Vocabulary {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'vocabulary/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4><a href="/vocabulary">Vocabulary</a> | New</h4>
+    <hr>
+    <div style="margin: 0px 15%">
+        {% for lang in languages %}
+            <img id="flag-{{lang}}" data-language='{{lang}}' class="flag" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')">
+        {% endfor %}
+        <br>
+        <br>
+        <p>Add new vocabulary</p>
+        <form id="addVocabForm" method="post" novalidate>
+            {% csrf_token %}
+            <div class="input-group mb-3">
+                <input id="word-1" style="font-size: 20px" name="word-1" type="text" class="form-control" autocomplete="off" placeholder="Japanese" required autofocus>
+                <input id="word-2" style="font-size: 20px" name="word-2" type="text" class="form-control" autocomplete="off" placeholder="Translation" required>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Add"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+        </form>
+        <div id="message"></div>
+    </div>
+</body>
+<script src="{% static 'vocabulary/index.js' %}"></script>
+<script src="{% static 'vocabulary/wanakana.min.js' %}"></script>
+<script>
+    const vocab = {{vocab|safe}};
+    var foreignLanguage = {{languages|safe}}[0]
+
+    $("#addVocabForm").on('submit', function(e){
+        e.preventDefault();
+        var word_1 = document.getElementById('word-1').value.trim();
+        var word_2 = document.getElementById('word-2').value.trim();
+
+        if (checkIfVocabAlreadyExists(word_1, word_2)) {
+            showMessage('Word already exists!', 'danger');
+        } else if (foreignLanguage == 'jp' && !checkIfVocabIsHiraganaOrKanji(word_1)) {
+            showMessage('No valid Hiragana or Kanji!', 'danger');
+        } else if (word_1 && word_2) {
+            showMessage('Word added!', 'success');
+            if (foreignLanguage == 'jp') {
+                word_1 = word_1.replace(' / ', '、');  // copied from Busuu
+            }
+            saveNewWord(word_1, word_2);
+            document.getElementById('word-1').value = '';
+            document.getElementById('word-2').value = '';
+            document.getElementById('word-1').focus();
+        } else if (word_1) {
+            document.getElementById('word-2').focus();
+        }
+    })
+
+    function checkIfVocabIsHiraganaOrKanji(str) {
+        for (let i = 0; i < str.length; i++) {
+            var c = str[i]
+            if (!(wanakana.isHiragana(c) || wanakana.isKanji(c) || c == '、' || c == '/' || c == ' ')) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function checkIfVocabAlreadyExists(word_1, word_2) {
+        for (v of vocab) {
+            if ((v.language == foreignLanguage) && (v.word_1.toLowerCase() == word_1.toLowerCase() || v.word_2.toLowerCase() == word_2.toLowerCase())) {
+                return true
+             }
+        }
+        return false
+    }
+
+    function saveNewWord(word_1, word_2) {
+        let data = new FormData();
+        data.append('word_1', word_1);
+        data.append('word_2', word_2);
+        data.append('language', foreignLanguage);
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+    }
+
+    function updatePage() {
+        document.getElementsByName('word-1')[0].placeholder = getLanguageName();
+    }
+
+    $(document).ready(function(){
+        changeLanguage('jp');  // activate Hiragana input as japanese is default language
+    })
+</script>
+
+{% endblock %}

@@ -1,0 +1,125 @@
+@media screen {
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-gap: 5px;
+  }
+
+  .grid-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #eeeeee;
+    transition: transform .1s;
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    padding-top: calc(100% * 1.5);
+    height: 0;
+  }
+
+  .plus-icon {
+    padding-bottom: calc(100% * 1.5);
+  }
+
+  .grid-item i {
+    font-size: 36px;
+  }
+
+  .grid-item:hover {
+    cursor: pointer;
+  }
+
+  .grid-item:not(:last-child):hover {
+      transform: scale(1.02);
+  }
+
+  #add-new-cover-grid-item {
+    color: #43AA8B;
+    background-color: #F2F4FF;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 33px;
+    right: calc(50% - 110px);
+    cursor: pointer;
+    font-size: 36px;
+    color: white;
+  }
+
+  #dropArea {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: white;
+    justify-content: center;
+    width: 150px;
+    height: 240px;
+    border: 1px dashed white;
+    margin: 45px auto;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+  }
+
+  #coverInput {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  #urlInput {
+    display: flex;
+    text-align: center;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .input-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 15% 5px 15%;
+  }
+
+  .custom-btn {
+    margin-top: 20px;
+    background-color: #43AA8B;
+    border-color: #43AA8B;
+    color: #fff;
+  }
+
+  .custom-btn:hover {
+    background-color: #254441;
+    border-color: #254441;
+    color: #fff;
+  }
+
+  #dropAreaText br {
+    margin-bottom: 10px;
+  }
+
+  #message {
+    margin-top: 25px;
+  }
+
+} /* end @media */

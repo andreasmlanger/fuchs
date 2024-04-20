@@ -1,0 +1,22 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block header %}
+<!-- Simplepicker -->
+<link rel="stylesheet"  href="{% static 'stocks/simplepicker/simplepicker.css' %}">
+
+<!-- Bootstrap Table CSS -->
+<link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.css">
+
+<!-- Bootstrap Table JS -->
+<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.js"></script>
+<script src="https://unpkg.com/bootstrap-table@1.17.1/dist/extensions/export/bootstrap-table-export.min.js"></script>
+
+<!-- Bokeh JS -->
+{% include "main/bokeh.html" %}
+
+<!-- Simplepicker JS -->
+<script src="{% static 'stocks/simplepicker/simplepicker.js' %}" type="text/javascript"></script>
+
+<link rel="stylesheet" href="{% static 'stocks/style.css' %}">
+{% endblock %}

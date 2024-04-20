@@ -1,0 +1,89 @@
+<!doctype html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <!-- Scale mobile browser -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon icon -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+
+    <!-- jQuery first, then Popper & Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+
+    <!-- Bootbox (not compatible with Bootstrap 5) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/c14f5552b0.js" crossorigin="anonymous"></script>
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'main/style.css' %}">
+    {% block header %}{% endblock %}
+</head>
+
+<body>
+    {% if user.is_authenticated %}
+    <div id="account" class="dropdown">
+        <div class="btn-group dropdown">
+            <button id="accountButton" class="btn btn-default" type="button" data-toggle="dropdown">
+                <img src="{% if avatar %} data:image/png;base64, {{avatar}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail">
+            </button>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                    <li class="dropdown-item link"><a href="/account">Account</a></li>
+                    <li class="dropdown-item link" onclick="this.parentNode.parentNode.submit();">Logout</li>
+                </ul>
+            </form>
+        </div>
+    </div>
+    <nav role="navigation">
+        <div id="menuToggle">
+            <input type="checkbox"/>  <!--Hidden checkbox used as click receiver-->
+            <span></span>  <!--3 spans that act as hamburger-->
+            <span></span>
+            <span></span>
+            <ul id="menu">
+                <li><a href="/safe" data-toggle="tooltip" data-placement="right" title="Safe"><i class="fa-solid fa-person-drowning"></i></a></li>
+                <li><a href="/events" data-toggle="tooltip" data-placement="right" title="Events"><i class="fa-solid fa-calendar-days"></i></a></li>
+                <li><a href="/scrape" data-toggle="tooltip" data-placement="right" title="Scrape"><i class="fa-solid fa-basket-shopping"></i></a></li>
+                <li><a href="/weather" data-toggle="tooltip" data-placement="right" title="Weather"><i class="fa-solid fa-umbrella"></i></a></li>
+                <li><a href="/vocabulary" data-toggle="tooltip" data-placement="right" title="Vocabulary"><i class="fa-solid fa-language"></i></a></li>
+                <li><a href="/quotes" data-toggle="tooltip" data-placement="right" title="Quotes"><i class="fas fa-quote-right"></i></a></li>
+                <li><a href="/trailer" data-toggle="tooltip" data-placement="right" title="Trailer"><i class="fas fa-trailer"></i></a></li>
+                <li><a href="/portfolio" data-toggle="tooltip" data-placement="right" title="Stocks"><i class="fas fa-socks"></i></a></li>
+                <li><a href="/frog" data-toggle="tooltip" data-placement="right" title="Frog"><i class="fas fa-frog"></i></a></li>
+                <li><a href="/cookbook" data-toggle="tooltip" data-placement="right" title="Cookbook"><i class="fa-solid fa-utensils"></i></a></li>
+                <li><a href="/travel" data-toggle="tooltip" data-placement="right" title="Travel"><i class="fa-solid fa-plane"></i></a></li>
+                {% if user.is_superuser %}
+                    <!-- This is only for me -->
+                    <li><a href="/books" data-toggle="tooltip" data-placement="right" title="Books"><i class="fa-solid fa-book"></i></a></li>
+                    <li><a href="/cycle" data-toggle="tooltip" data-placement="right" title="Cycle"><i class="fa-solid fa-bicycle"></i></a></li>
+                    <li><a href="/blog" data-toggle="tooltip" data-placement="right" title="Blog"><i class="fa-solid fa-feather"></i></a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
+    <div style="margin: 15px min(10%, 90px)">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+
+<!-- Modals -->
+{% include 'main/components/modal_confirm.html' %}
+{% include 'main/components/modal_prompt.html' %}
+
+<script src="{% static 'main/index.js' %}"></script>
+
+</html>

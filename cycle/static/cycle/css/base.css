@@ -1,0 +1,52 @@
+@media screen {
+
+  .card a {
+    color: black;
+  }
+
+  .card a:hover {
+    color: black;
+  }
+
+  h4 a {
+    color: black;
+  }
+
+  h4 a:hover {
+    color: black;
+  }
+
+  .card {
+    background-color: #f9f7f7;
+  }
+
+  .pointer:hover {
+    cursor: pointer;
+    color: #ED254E;
+  }
+
+  .frame {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #ffffff;
+    display: inline-block;
+  }
+
+  .page-number {
+    padding: 5px;
+  }
+
+  .hide {
+    display: none;
+  }
+
+  .selected {
+    color: #ED254E;
+  }
+
+  td i {
+    padding: 2px;
+  }
+
+} /* end @media */

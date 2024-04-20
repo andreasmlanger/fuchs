@@ -1,0 +1,27 @@
+@media screen {
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(208px, 1fr));
+  }
+
+  .grid-item {
+    background-color: #eeeeee;
+    border-radius: 10px;
+    transition: transform .1s;
+    background-size: cover;
+    background-position: center;
+    height: 117px;
+    margin: 10px;
+  }
+
+  .grid-item span {
+    display: inline-block;
+  }
+
+  .grid-item:hover {
+    transform: scale(1.02);
+    cursor: pointer;
+  }
+
+} /* end @media */

@@ -1,0 +1,24 @@
+@media screen {
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #eee;
+  }
+
+  .link:hover {
+    cursor: pointer;
+  }
+
+  .highlight {
+    cursor: pointer;
+  }
+
+  .highlight:hover {
+    color: #ed254e;
+  }
+
+  .dropdown-item a:hover {
+    text-decoration: none;
+  }
+
+} /* end @media */

@@ -1,0 +1,94 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Safe {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'safe/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Safe</h4>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="scrollbar" id="main">
+                {% include "safe/main.html" %}
+            </table>
+            <br>
+            <form id="addMessageForm" class="form" method="post">
+                <div class="form-group">
+                    <label for="message">Your message</label>
+                    <textarea name="message" class="form-control" id="message" onkeyup="success()" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    {% csrf_token %}
+                    <button id="sendButton" class="btn btn-success" type="submit" disabled>Send</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <form class="form" method="post">
+                <div class="form-group">
+                    <label for="text">Your safely stored information</label>
+                    <textarea id="text" name="text" class="form-control secret-area" style="height: calc(100vh - 197px); min-height: 303px;" disabled>{{text}}</textarea>
+                </div>
+                <div class="form-group">
+                    {% csrf_token %}
+                    <button id="editButton" class="btn btn-light" type="button" onclick="editText()">Edit</button>
+                    <button id="saveButton" class="btn btn-success" type="submit" disabled>Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+<script>
+    $("#addMessageForm").on('submit', function(e){
+        e.preventDefault();
+        submitMessageForm();
+    })
+
+    function submitMessageForm() {
+        var message = document.getElementById('message').value.trim();
+        $("#addMessageForm")[0].reset();
+        document.getElementById('sendButton').disabled = true;
+        if (message) {
+            updateMessages(message);
+        }
+    }
+
+    function updateMessages(message) {
+        $.ajax({
+            url: "{% url 'add_message' %}",
+            type: 'POST',
+            data: {
+                'message': message,
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+            },
+            success: function(data) {
+                hideAllTooltips();
+                $('#main').html(data);
+                enableTooltips();
+            }
+        });
+    }
+
+    function success() {
+	    if(document.getElementById('message').value === '') {
+            document.getElementById('sendButton').disabled = true;
+        } else {
+            document.getElementById('sendButton').disabled = false;
+        }
+    }
+
+    function editText() {
+        document.getElementById('saveButton').disabled = !document.getElementById('saveButton').disabled;
+        document.getElementById('text').disabled = !document.getElementById('text').disabled;
+    }
+
+    document.addEventListener('DOMContentLoaded', function(event) {
+        setInterval(function() {updateMessages()}, 5000);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,60 @@
+@media screen {
+
+  th{
+    font-weight: 600;
+  }
+
+
+  .zoom {
+    transition: transform .1s;
+  }
+
+  .zoom:hover {
+    transform: scale(1.05);
+  }
+
+  .link {
+    color: #000000;
+  }
+
+  .form-popup {
+    border: 1px solid #dee2e6;
+  }
+
+  .form-container {
+    padding-left: 30px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+  }
+
+  .form-container input[type=text] {
+    width: 85%;
+    border: none;
+    /* background: #f1f1f1; */
+  }
+
+  .input-container {
+    width: 18.5%;
+    min-width: 140px;
+  }
+
+  .btn-container {
+    width: 5%;
+    padding-top: 38px;
+  }
+
+  h4 a {
+    color: #808080;
+  }
+
+  h4 a:hover {
+    color: black;
+  }
+
+  #message {
+    position: absolute;
+    top: 183px;
+    left: 240px;
+  }
+
+} /* end @media */

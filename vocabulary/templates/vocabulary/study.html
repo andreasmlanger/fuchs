@@ -1,0 +1,162 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Study {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'vocabulary/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4><a href="/vocabulary">Vocabulary</a> | Study</h4>
+    <hr>
+    {% if vocab %}
+        <section id="main" style="text-align: center">
+        <br>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <h2>
+                    {% for lang in languages %}
+                        <img id="flag-{{lang}}" class="flag" style="margin-right: 10px; {% if vocab.0.language != lang %} display: none {% endif %}" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" height="40px">
+                    {% endfor %}
+                    <span id="word_1">{{vocab.0.word_1}}</span><span id="word_2" style="margin-left: 10px; color: white; display: {% if vocab.0.level < 2 %} inline-block {% else %} none {% endif %}" class="badge bg-info" data-toggle="tooltip" data-placement="right" title="{{vocab.0.word_2}}" ><i class="fa-solid fa-question"></i></span>
+                </h2>
+                <br>
+                <form id="submitWordForm" method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input id="word-input" style="font-size: 20px" name="word-typed" type="text" class="form-control" placeholder="Type your answer" autocomplete="off" required autofocus>
+                        <div class="input-group-append">
+                            <button id="submit-button" type="submit" class="btn btn-dark" disabled><i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </form>
+                <div id="message" style="font-size: 20px"></div>
+            </div>
+            <div class="col-2">
+                <h2 style="text-align: center"><i class="fa-solid fa-clipboard-list" data-toggle="tooltip" data-placement="top" title="Remaining" ></i> <span id="remaining">{{vocab|length}}</span></h2>
+            </div>
+        </div>
+        </section>
+    {% else %}
+        <p>Nothing to do here, come back later!</p>
+    {% endif %}
+</body>
+<script src="{% static 'vocabulary/index.js' %}"></script>
+<script src="{% static 'vocabulary/wanakana.min.js' %}"></script>
+<script>
+    var vocab = {{vocab|safe}};
+    var activeWord = vocab[0];
+    vocab = vocab.slice(1);
+    var submitted = false;
+
+    $("#submitWordForm").on('submit', function(e){
+        e.preventDefault();
+        if (submitted) {
+            displayNextWord();
+        } else {
+            document.getElementById('word-input').disabled = true;
+            document.getElementById("submit-button").focus();
+            var typedWord = document.getElementById('word-input').value.trim();
+            var splitCharacter = isJapanese(activeWord) ? '、' : ','
+            var wordList = activeWord.word_2.split(splitCharacter);
+            var correct = checkIfWordIsCorrect(typedWord, wordList);
+            var deltaLevel;
+            if (correct == 0) {
+                showMessage('Incorrect: "<b>' + activeWord.word_2 + '</b>"', 'danger');
+                deltaLevel = -2;
+                vocab.push(activeWord)  // push back to array
+            } else {
+                if (correct == 1) {
+                    showMessage('Correct', 'success')
+                } else {
+                    showMessage('Almost correct: "<b>' + activeWord.word_2 + '</b>"', 'warning')
+                }
+                deltaLevel = 1;
+            }
+            updateLevel(activeWord.id, typedWord, deltaLevel);
+        }
+        submitted = ! submitted;
+    })
+
+    function checkIfWordIsCorrect(typedWord, wordList) {
+        for (word of wordList) {
+            var similarity = calculateSimilarity(typedWord, word.trim());
+            if (similarity > 0.85) {
+                return similarity
+            }
+        }
+        return 0
+    }
+
+    function isJapanese(word) {
+        return word.language == 'jp' & word.level % 2 === 1;
+    }
+
+    function toggleHiragana() {
+        var input = document.getElementById('word-input');
+        toggleHiraganaInput(input, isJapanese(activeWord));
+    }
+
+    function displayNextWord() {
+        if (vocab.length > 0) {
+            $("#message").html('');
+            $('#submit-button').prop('disabled', true);
+            document.getElementById('word-input').value = '';
+            document.getElementById('word-input').disabled = false;
+            document.getElementById('word-input').focus();
+            document.getElementById('remaining').innerHTML = vocab.length;
+            activeWord = randomItem(vocab)[0];
+            document.getElementById('word_1').innerHTML = activeWord.word_1;
+            document.getElementById('word_2').style.display = activeWord.level < 2 ? 'inline-block' : 'none';
+            $('#word_2').attr('data-original-title', activeWord.word_2);
+            displayCorrectFlag(activeWord.language);
+            enableTooltips();
+            toggleHiragana();
+        } else {
+            document.getElementById('main').innerHTML = "Session completed!";
+        }
+    }
+
+    function displayCorrectFlag(lang) {
+        var activeFlag = document.getElementById('flag-' + lang);
+        foreignLanguage = activeFlag.getAttribute('data-language');
+        Array.from(document.getElementsByClassName("flag")).forEach((flag) => {
+            flag.style.display = (flag == activeFlag) ? "inline-block" : "none";
+        });
+    }
+
+    function updateLevel(id, typedWord, deltaLevel) {
+        let done = vocab.length === 0
+        let data = new FormData();
+        data.append('id', id);
+        data.append('typed_word', typedWord);
+        data.append('delta_level', deltaLevel);
+        data.append('task', 'update_level');
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+        .then(response => {
+            if (done) {
+                window.location.href = "/vocabulary";
+            }
+        })
+    }
+
+    $("#word-input").on("keyup", function(e){
+        $('#submit-button').prop('disabled', e.target.value.trim().length == 0);
+    })
+
+    document.addEventListener("DOMContentLoaded", function() {
+        toggleHiragana();
+    });
+</script>
+
+{% endblock %}

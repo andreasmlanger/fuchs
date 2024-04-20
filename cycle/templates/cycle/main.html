@@ -1,0 +1,214 @@
+{% load static %}
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for route in routes %}
+        <div id="{{route.Id}}" class="col {{route.Status}} route hide" style="max-width: 370px;">
+            <div class="card text-black mb-3">
+                <div class="card-body" style="padding: 0">
+                    <div id="map{{route.Id}}" style="height: 200px; max-width: 100%; overflow: hidden;" data-url="{{route.Url}}" data-id="{{route.Id}}">
+                    </div>
+                    <div style="padding: 10px">
+                        <table>
+                            <tr>
+                                <td width="230" style="font-size: 20px"><a href="/cycle/{{route.Id}}" target="_blank">{{route.Title}}</a></td>
+                                <td width="100" style="text-align:right; min-width: 100px">
+                                    <i class="pointer fa-solid fa-mountain" data-toggle="tooltip" data-placement="top" title="Open Elevation Profile" onclick="fetchProfile('{{route.Url}}', '{{route.Filename}}')"></i>
+                                    <i class="pointer fa-solid fa-download" data-toggle="tooltip" data-placement="top" title="Download GPX" onclick="download_gpx('{{route.Url}}', '{{route.Filename}}')"></i>
+                                    <i id="doneIcon{{route.Id}}" class="pointer fa-solid fa-flag-checkered {% if route.Status == 'done' %} hide {% endif %}" data-toggle="tooltip" data-placement="top" title="Mark as Done" onclick="submit_id('{{route.Id}}', 'mark_as_done')"></i>
+                                    <i id="unDoneIcon{{route.Id}}" class="pointer fa-solid fa-clock-rotate-left {% if route.Status == 'planned' %} hide {% endif %}" data-toggle="tooltip" data-placement="top" title="Mark as Undone" onclick="submit_id('{{route.Id}}', 'mark_as_undone')"></i>
+                                    <i class="pointer trash fa-solid fa-trash" data-toggle="tooltip" data-placement="top" title="Delete" onclick="submit_id('{{route.Id}}', 'delete')"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 12px">{{route.Stats}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+<div id="pagination" class="frame"></div>
+<div id="nothing-here-text" class="hide"><p>Nothing here!</p></div>
+
+<!-- Modal with elevation profile -->
+<div id="modal" class="elevation-modal">
+    <div class="elevation-modal-content">
+        <span class="elevation-close">&times;</span>
+        <div id="modal-body"></div>
+    </div>
+</div>
+
+<script src="{% static 'cycle/index.js' %}"></script>
+
+<script>
+    const routesPerPage = (window.innerWidth < 768) ? 2 : 3;
+    var routeType = 'planned';
+    var page = 1;
+
+    function getNrOfRoutes() {
+        return document.querySelectorAll('.route.' + routeType).length;
+    }
+
+    function updatePagination() {
+        document.getElementById('nothing-here-text').classList.add('hide');
+        paginationDiv = document.getElementById('pagination');
+        paginationDiv.innerHTML = '';
+        var nrOfRoutes = getNrOfRoutes();
+        var pages = getPages(nrOfRoutes, routesPerPage);
+
+        for (var i = 0; i < pages; i++) {
+            var pageNumber = i + 1;
+            var spanElement = document.createElement("span");
+            spanElement.setAttribute("class", "pointer " + routeType + " page-number");
+            spanElement.setAttribute("onclick", "displayPage(" + pageNumber + ")");
+            spanElement.innerHTML = pageNumber;
+            paginationDiv.appendChild(spanElement);
+        }
+
+        if (pages == 0) {
+            paginationDiv.style.display = 'none';
+            document.getElementById('nothing-here-text').classList.remove('hide');
+        } else if (page > pages) {
+            page -= 1;
+        }
+    }
+
+    function changeRouteType(clickedCategory, x) {
+        routeType = x;
+        updatePagination();
+        highlightCategory(clickedCategory);
+        addAttributeToElementsOfClass('.page-number', 'hide')
+        removeAttributeFromElementsOfClass('.' + routeType, 'hide')
+        displayPage(1);
+    }
+
+    function displayPage(j) {
+        addAttributeToElementsOfClass('.route', 'hide');
+        var elements = document.querySelectorAll('.' + routeType);
+        for (var i = 0; i < elements.length; i++) {
+            if ((i >= routesPerPage * (j - 1)) && (i < routesPerPage * j)) {
+                elements[i].classList.remove('hide');
+                var map = document.querySelectorAll('[data-id="' + elements[i].id + '"]')[0];
+                if (map) {
+                    var url = map.getAttribute('data-url');
+                    if (map.innerHTML.trim() == '') {
+                        fetchMap(url, elements[i].id);
+                    }
+                }
+            }
+        }
+        removeAttributeFromElementsOfClass('.page-number.' + routeType, 'selected')
+        var nrOfRoutes = getNrOfRoutes();
+        if (nrOfRoutes > 0) {
+            document.querySelectorAll('.page-number.' + routeType)[j - 1].classList.add("selected");
+        }
+        page = j;
+    }
+
+    function download_gpx(url, filename) {
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState === 4 && xhttp.status === 200) {
+                var a = document.createElement('a');
+                a.href = window.URL.createObjectURL(xhttp.response);
+                a.download = filename + ".gpx";
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                return a.click();
+            }
+        };
+        xhttp.open("POST", "");
+        xhttp.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+        xhttp.setRequestHeader("Content-Type", "application/json");
+        xhttp.setRequestHeader("Url", url);
+        xhttp.setRequestHeader("Filename", filename);
+        xhttp.responseType = 'blob';
+        xhttp.send();
+    }
+
+    function submit_id(id, task) {
+        var title = getPrompt(task);
+        showModalConfirm(title, function(result) {
+            if (task == 'mark_as_done') {
+                document.getElementById(id).classList.replace('planned', 'done');
+                document.getElementById('doneIcon' + id).classList.add('hide');
+                document.getElementById('unDoneIcon' + id).classList.remove('hide');
+            } else if (task == 'mark_as_undone') {
+                document.getElementById(id).classList.replace('done', 'planned');
+                document.getElementById('doneIcon' + id).classList.remove('hide');
+                document.getElementById('unDoneIcon' + id).classList.add('hide');
+            } else {  // delete
+                removeElement(document.getElementById(id));
+            }
+            updatePagination();
+            displayPage(page);
+            let data = new FormData();
+            data.append('id', id)
+            data.append('task', task)
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: data,
+            })
+        });
+    }
+
+    function fetchMap(map_url, id) {
+        let data = new FormData();
+        data.append('task', 'fetch_map');
+        data.append('map_url', map_url);
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+        .then(response => response.json())
+        .then(data => {
+            $('#map' + id).html(data.map);
+        })
+    }
+
+    function fetchProfile(map_url, title) {
+        openModal();
+        let data = new FormData();
+        data.append('task', 'fetch_profile');
+        data.append('map_url', map_url);
+        data.append('title', title);
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+        .then(response => response.json())
+        .then(data => {
+            $('#modal-body').html(data.bokeh);
+            document.body.style.overflow = 'hidden';
+        })
+    }
+
+    document.getElementsByClassName("elevation-close")[0].onclick = function() {
+      closeModal();
+    }
+
+    window.onclick = function(event) {
+      if (event.target == document.getElementById("modal")) {
+        closeModal();
+      }
+    }
+
+    updatePagination();
+    displayPage(1);
+</script>

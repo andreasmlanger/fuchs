@@ -1,0 +1,236 @@
+{% extends 'stocks/base.html' %}
+{% load static %}
+{% block title %} Watchlist {% endblock %}
+
+{% block content %}
+<body>
+    <h4><a href="/portfolio">Portfolio</a> | Watchlist</h4>
+    <hr>
+    <!-- Add stock form -->
+    <div class="form-popup form-container" id="formContainer">
+        <form id="addStockForm" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="form-group input-container">
+                    <label for="name-input" class="col-form-label">Name</label>
+                    <input id="name-input" class="form-control" type="text" placeholder="e.g. Tesla">
+                </div>
+                <div class="form-group input-container">
+                    <label for="symbol-input" class="col-form-label">Ticker Symbol <span class="highlight" data-toggle="tooltip" data-placement="top" title="Find Symbol" onclick="searchYahoo()"><i class="fas fa-search"></i></span></label>
+                    <input id="symbol-input" class="form-control" type="text" placeholder="e.g. TL0.F">
+                </div>
+                <div class="form-group btn-container">
+                    <button id="add-button" type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Add stock" ><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% include "stocks/main.html" with stocks='watchlist' show_footer='false' col1=7 col2=5 %}
+</body>
+<script src="{% static 'stocks/index.js' %}"></script>
+<script>
+    const CSFRtoken = '{{ csrf_token }}'
+
+    var $table = $('#table')
+    var data = {{table|safe}}
+    var symbols = data.map(row => row['symbol']);
+
+    function checkAndGetInput() {
+        var symbol = document.getElementById('symbol-input').value.trim()
+        var name = document.getElementById('name-input').value.trim()
+
+        if (symbols.includes(symbol)) {
+            highlight('symbol-input', 'yellow')
+            displayMessage('Stock already in watchlist!', 'warning')
+            return false
+        }
+
+        var flag = false
+
+        if (!symbol) {
+            flag = true
+            highlight('symbol-input', 'red')
+        } else {
+            highlight('symbol-input', 'green')
+        }
+
+        if (!name) {
+            flag = true
+            highlight('name-input', 'red')
+        } else {
+            highlight('name-input', 'green')
+        }
+
+        if (flag) {
+            displayMessage('Missing or invalid input', 'danger')
+            return false
+        } else {
+            highlight('symbol-input', '')
+            highlight('name-input', '')
+
+            document.getElementById('symbol-input').value = ''
+            document.getElementById('name-input').value = ''
+
+            return [symbol, name]
+        }
+    }
+
+    $("#addStockForm").on('submit', function(e){
+        e.preventDefault();
+        var inputArray = checkAndGetInput()
+
+        if (inputArray) {
+            submit_ajax('/watchlist', {'stock_to_add': inputArray[0],
+                                       'name': inputArray[1]})
+        }
+    });
+
+    function removeStock(symbol) {
+        $table.bootstrapTable('remove', {
+            field: 'symbol',
+            values: symbol
+        })
+        submit_ajax('/watchlist', {'stock_to_delete': symbol})
+    }
+
+    function refresh() {
+        submit_ajax('/watchlist', {'task': 'refresh'})
+    }
+
+    function initTable() {
+        $table.bootstrapTable('destroy').bootstrapTable({
+            data: data,
+            columns: [
+                [{
+                    field: 'Checked',
+                    checkbox: true,
+                    align: 'center',
+                    valign: 'middle'
+                }, {
+                    title: 'Name',
+                    field: 'name',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                }, {
+                    title: 'Symbol',
+                    field: 'symbol',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                }, {
+                    title: 'Price',
+                    field: 'today',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: euroFormatter,
+                }, {
+                    title: '3YTD',
+                    field: 'return_3ytd',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: percentageFormatter,
+                }, {
+                    title: 'YTD',
+                    field: 'return_ytd',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: percentageFormatter,
+                }, {
+                    title: 'Today',
+                    field: 'return_yesterday',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: percentageFormatter,
+                }, {
+                    title: 'Volatility',
+                    field: 'volatility',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: volatilityFormatter,
+                }, {
+                    title: 'Action',
+                    field: 'action',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: actionFormatter,
+                }, {
+                    title: '',
+                    field: 'operate',
+                    align: 'center',
+                    valign: 'middle',
+                    clickToSelect: false,
+                    events: window.operateEvents,
+                    formatter: operateFormatter,
+                    width: 40,
+                }]
+            ],
+            formatNoMatches: function () {
+                return 'No matching stocks found'
+            }
+        })
+
+        if (isMobile()) {
+            $table.bootstrapTable('hideColumn', 'symbol')
+            $table.bootstrapTable('hideColumn', 'today')
+            $table.bootstrapTable('hideColumn', 'return_3ytd')
+            $table.bootstrapTable('hideColumn', 'return_ytd')
+            $table.bootstrapTable('hideColumn', 'volatility')
+            $table.bootstrapTable('hideColumn', 'action')
+        }
+
+        $table.on('all.bs.table', function () {
+            $('[data-toggle="tooltip"]').tooltip({trigger : 'hover'});
+        })
+
+        updateTable()
+    }
+
+    function volatilityFormatter(value, row, index) {
+        if (value < 2) {
+            return 'Very Low'
+        } else if (value < 4) {
+            return 'Low'
+        } else if (value < 6) {
+            return 'Moderate'
+        } else if (value < 8) {
+            return 'High'
+        } else {
+            return 'Very High'
+        }
+    }
+
+    function actionFormatter(value, row, index) {
+        if (value == 'Buy') {
+            return value + '!'
+        } else {
+            return value + '!'
+        }
+    }
+    
+    function operateFormatter(value, row, index) {
+        return [
+            '<a class="delete" data-toggle="tooltip" href="javascript:void(0)" title="Remove stock" style="color: #5a6268">',
+            '<i class="fas fa-trash"></i>',
+            '</a>',
+        ].join('')
+    }
+    
+    window.operateEvents = {
+        'click .delete': function (e, value, row, index) {
+            var symbol = row['symbol'];
+            const title = "Are you really sure you want to remove this stock?";
+            showModalConfirm(title, function(result) {
+                removeStock(symbol);
+            })
+        },
+    }
+</script>
+
+{% endblock %}

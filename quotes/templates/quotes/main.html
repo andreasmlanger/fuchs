@@ -1,0 +1,21 @@
+{% if quotes %}
+    <div id="toolbar" class="btn-toolbar" role="toolbar">
+        <div class="input-group mb-3">
+            <form id="searchForm" method="post" class="form-group" onkeydown="return event.key != 'Enter'">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input id="searchInput" class="form-control" type="text" placeholder="Search" oninput="updateGridOnSearch()">
+                </div>
+            </form>
+        </div>
+    </div>
+{% endif %}
+<div id="grid" class="grid-container">
+    {% for q in quotes %}
+        <div id="gridItem{{q.id}}" class="grid-item" data-quote="{{q.quote}}">
+            <span style="width: calc(100% - 30px)">{{q.quote}}</span><span style="width: 30px; text-align: right"><i class="highlight fas fa-trash" data-toggle="tooltip" data-placement="left" title="Delete" onclick="deleteQuote({{q.id}})"></i></span>
+        </div>
+    {% endfor %}
+</div>

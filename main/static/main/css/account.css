@@ -1,0 +1,30 @@
+@media screen {
+
+  #account {
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 80px;
+    z-index: 3;
+    user-select: none;
+  }
+
+  #accountButton {
+    outline: none;
+    box-shadow: none;
+  }
+
+  #account a {
+    color: black;
+  }
+
+  .weather-icon-frame {
+    background-color: white;
+    border-radius: 50%;
+    border: 1px solid #ced4da;
+    display: inline-block;
+    padding: 2px;
+  }
+
+} /* end @media */

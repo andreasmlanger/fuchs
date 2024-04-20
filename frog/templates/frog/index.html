@@ -1,0 +1,177 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Frog {% endblock %}
+
+{% block content %}
+
+<!--This script needs to run before everything else-->
+<script src="https://pygame-web.github.io/archives/0.8/pythons.js" type=module id="site" data-python="cpython3.11" data-os="vtx,fs,snd,gui" async defer>
+import pygame
+import asyncio
+import json
+from pathlib import Path
+import platform
+import sys
+
+WIDTH = 2048  # iPad!
+HEIGHT = 1536
+
+async def custom_site():
+    def compose():
+        pygame.display.update()
+        window.chromakey(None, *screen.get_colorkey(), 40)
+
+    pygame.init()
+    pygame.font.init()
+    screen = pygame.display.set_mode([WIDTH, HEIGHT], pygame.SRCALPHA, 32)
+    screen.set_colorkey((0,0,0,0), pygame.RLEACCEL)
+    platform.window.loader.style.display = "none"  # hide CSS loader
+    screen.fill((0,0,0,0))
+
+    compose()
+
+    platform.window.canvas.style.visibility = "visible"
+
+    apk = "{% static 'frog/frog.apk' %}";
+    bundle = "frog"
+
+    appdir = Path(f"/data/data/{bundle}") # /data/data/frog
+    appdir.mkdir()
+
+    # mount apk
+    cfg = {
+        "io": "url",
+        "type": "mount",
+        "mount" : {
+            "point" : appdir.as_posix(),
+            "path" : "/",
+        },
+        "path" : f"/ => {appdir.as_posix()}",
+    }
+
+    track = platform.window.MM.prepare(apk, json.dumps(cfg))
+    while not track.ready:
+        await asyncio.sleep(.1)  # wait until zip mount and overlay fs is complete
+
+    main = appdir / "assets" / "main.py"
+
+    await shell.runpy(main)
+
+asyncio.run(custom_site())
+</script>
+
+<head>
+    <script type="application/javascript">
+    config = {
+        xtermjs : "1" ,
+        _sdl2 : "canvas",
+        user_canvas : 0,
+        user_canvas_managed : 0,
+        ume_block : 1,
+        can_close : 0,
+        archive : "frog",
+        gui_debug : 3,
+        cdn : "https://pygame-web.github.io/archives/0.8/",
+        autorun : 0,
+        PYBUILD : "3.11"
+    }
+    </script>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="height=device-height, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.8/pythonrc.py">
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.8/vt/xterm.js">
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.8/vt/xterm-addon-image.js">
+    <link rel="prefetch" href="https://pygame-web.github.io/archives/0.8/vt/xterm-addon-image.js">
+    <link rel="stylesheet" href="{% static 'frog/style.css' %}">
+
+    <style>
+        div.emscripten { text-align: center; }
+        div.thick_border { border: 4px solid black; }
+
+        canvas.emscripten {
+            border: 0px none;
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            padding: 0;
+            margin: 0 auto;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .bottomright {
+            position:absolute;
+        }
+
+        .center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .framed {
+           position:relative;
+           top:150px;
+           right:10px;
+           border: 1px solid black;
+        }
+    </style>
+
+    <script src="https://pygame-web.github.io/archives/0.8//browserfs.min.js"></script>
+
+</head>
+
+<body>
+    <div id="transfer" align=center>
+        <div class="emscripten" id="status" style="color: #eeeeee">Loading</div>
+        <div class="emscripten"></div>
+    </div>
+
+    <canvas class="emscripten" id="canvas" width="1px" height="1px" oncontextmenu="event.preventDefault()" tabindex=1></canvas>
+
+    <div id=html>
+        <div id="loader" class="loader"><div></div><div></div><div></div><div></div></div>
+        <!--Here can be additional HTML code on page-->
+    </div>
+
+    <div id=crt class="bottomright">
+        <div id="system" hidden></div>
+        <div id=box class="emscripten_border" hidden>
+            <div id="info"></div>
+            <!--In this iframe, the PyGame appears-->
+            <iframe id="iframe" class="framed" name="iframe"
+                allowtransparency="true"
+                sandbox="allow-same-origin allow-top-navigation allow-scripts allow-pointer-lock"
+                allow="autoplay; fullscreen *; geolocation; microphone; camera; midi; monetization; xr-spatial-tracking; gamepad; gyroscope; accelerometer; xr; cross-origin-isolated"
+                src="https://pygame-web.github.io/archives/0.8/empty.html"
+                scrolling="yes">
+            </iframe>
+        </div>
+    </div>
+
+    <div id="pyconsole">
+        <div id="terminal" tabIndex=1 align="left"></div><!--Shows Python console upon loading-->
+    </div>
+
+    <script type="application/javascript">
+        async function custom_onload(debug_hidden) {
+            // This function is called before any other Python code is loaded
+            console.log(__FILE__, "custom_onload");
+            pyconsole.hidden = debug_hidden;  // debug_hidden = true
+            system.hidden = debug_hidden;
+            transfer.hidden = debug_hidden;
+            info.hidden = debug_hidden;
+            box.hidden =  debug_hidden;
+        }
+    </script>
+</body>
+{% endblock %}

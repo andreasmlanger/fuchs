@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Verdana;
+            padding-right: 10%;
+            padding-left: 10%;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table td, #table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        table tr:nth-child(even){
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #ddd;
+        }
+
+        table th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            padding-left: 10px;
+            background-color: #465C69;
+            color: white;
+            font-weight: 400;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    {% if status.0 == 'AWAKE' %}
+        <p style="text-align: center">{{status.0}}</p>
+    {% else %}
+        <table>
+            <tr><th>USER</th></th><th>APP</th><th>STATUS</th><th>NEXT SCHEDULED</th></tr>
+            {% for row in status %}
+                <tr>
+                    {% for col in row %}
+                        <td>{{col}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>

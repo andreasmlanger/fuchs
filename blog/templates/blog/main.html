@@ -1,0 +1,34 @@
+{% load static %}
+{% load custom_tags %}
+
+<div id="articles"></div>
+<div class="row">
+    <div class="col-md-9 mx-auto">
+        {% for d in data %}
+            <div class="card text-black mb-3">
+                <div class="card-body">
+                    <h4 style="margin-bottom: 15px">
+                        <i class="fa-solid fa-{% if d.Tags.0 == 'Quote' %}quote-right{% elif d.Tags.0 == 'Video' %}film{% elif d.Tags.0 == 'Question' %}circle-question{% elif d.Tags.0 == 'Image' %}image{% elif d.Tags.0 == 'GIF' %}photo-film{% else %}feather{% endif %}" data-toggle="tooltip" data-placement="top" title="{{d.Date}}"></i>
+                        <a href="/blog/{{d.Id}}">{{d.Title}}</a>
+                    </h4>
+                    <hr>
+                    {% for c in d.Content %}
+                        <p class="card-text">
+                            {% if 'p' in c %}
+                                {{c.p|safe}}
+                            {% elif 'img' in c %}
+                                <img style="max-width: 100%" class="framed" src="{{c.img}}" width="{{c.width}}">
+                            {% elif 'vid' in c %}
+                                <iframe style="max-width: 100%" width="400" height="300" src="{{c.vid}}" frameborder="0" allowfullscreen></iframe>
+                            {% elif 'aud' in c %}
+                                <audio controls>
+                                    <source src="{{c.aud}}" type="audio/mpeg">
+                                </audio>
+                            {% endif %}
+                        </p>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

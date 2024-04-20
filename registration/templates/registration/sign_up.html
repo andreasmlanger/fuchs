@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} Create an Account {% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-center">
+    <form style="width: min(500px, 80%)" method="post" class="from-group ">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success">Sign up</button>
+    </form>
+</div>
+
+{% endblock %}

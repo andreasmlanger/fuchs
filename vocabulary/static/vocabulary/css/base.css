@@ -1,0 +1,52 @@
+@media screen {
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .zoom {
+    transition: transform .1s;
+  }
+
+  .zoom:hover {
+    transform: scale(1.02);
+  }
+
+  .card {
+    max-width: 30rem;
+  }
+
+  h4 a {
+    color: #808080;
+  }
+
+  h4 a:hover {
+    color: black;
+  }
+
+  .search-hide {
+    display: none;
+  }
+
+  .lang-hide {
+    display: none;
+  }
+
+  .flag {
+    margin-right: 10px;
+  }
+
+  .flag:hover {
+    cursor: pointer;
+  }
+
+  .tooltip {
+    pointer-events: none;
+  }
+
+  .verb-input {
+    margin-top: 0.5rem;
+    height: 3rem;
+}
+
+} /* end @media */

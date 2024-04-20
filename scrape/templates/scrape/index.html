@@ -1,0 +1,150 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Scrape {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'scrape/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Kleinanzeigen & Urlaubspiraten</h4>
+    <hr>
+    <form id="addKleinanzeigenKeywordForm" method="post" autocomplete="off">
+        <div style="float: left" class="btn-toolbar mb-3">
+            <div class="btn-group mr-2" role="group">
+                <div class="dropdown" style="margin-right: 10px" data-toggle="tooltip" data-placement="top" title="Max Price">
+                    <button id="price" class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown">Unlimited</button>
+                    <div class="dropdown-menu">
+                        <span class="dropdown-item">2 €</span>
+                        <span class="dropdown-item">5 €</span>
+                        <span class="dropdown-item">10 €</span>
+                        <span class="dropdown-item">20 €</span>
+                        <span class="dropdown-item">30 €</span>
+                        <span class="dropdown-item">50 €</span>
+                        <span class="dropdown-item">100 €</span>
+                        <span class="dropdown-item">200 €</span>
+                        <span class="dropdown-item">Unlimited</span>
+                    </div>
+                </div>
+                <div class="dropdown" data-toggle="tooltip" data-placement="top" title="Max Distance">
+                    <button id="distance" class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown">100 km</button>
+                    <div class="dropdown-menu">
+                        <span class="dropdown-item">5 km</span>
+                        <span class="dropdown-item">10 km</span>
+                        <span class="dropdown-item">20 km</span>
+                        <span class="dropdown-item">30 km</span>
+                        <span class="dropdown-item">50 km</span>
+                        <span class="dropdown-item">100 km</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="float: right">
+            <a href="https://www.kleinanzeigen.de/stadt/{{user.profile.city}}/" target="_blank"><img src="{% static 'scrape/logos/kleinanzeigen.svg' %}" height="30px"></a>
+        </div>
+        <div class="input-group mb-3">
+            <input id="kleinanzeigen-keyword-input" type="text" class="form-control" placeholder="What would you like to buy on Kleinanzeigen?">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-dark"><i class="fa-solid fa-plus"></i></button>
+            </div>
+        </div>
+    </form>
+    <div id="grid_kleinanzeigen" class="grid-container">
+        {% include "scrape/main.html" with website='kleinanzeigen' %}
+    </div>
+    <hr>
+    <form id="addUrlaubspiratenKeywordForm" method="post" autocomplete="off">
+        <a href="https://www.urlaubspiraten.de/fluege" target="_blank"><img src="{% static 'scrape/logos/urlaubspiraten.svg' %}" height="32px"></a>
+        <div class="input-group mb-3">
+            <input id="urlaubspiraten-keyword-input" type="text" class="form-control" placeholder="Where would you like to go?">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-dark"><i class="fa-solid fa-plus"></i></button>
+            </div>
+        </div>
+    </form>
+    <div id="grid_urlaubspiraten" class="grid-container">
+        {% include "scrape/main.html" with website='urlaubspiraten' %}
+    </div>
+</body>
+<script>
+    $("#addKleinanzeigenKeywordForm").on('submit', function(e){
+        e.preventDefault();
+        addKeyword('kleinanzeigen');
+    })
+
+    $("#addUrlaubspiratenKeywordForm").on('submit', function(e){
+        e.preventDefault();
+        addKeyword('urlaubspiraten');
+    });
+
+    function addKeyword(website) {
+        var keyword = document.getElementById(website + '-keyword-input').value.trim();
+        document.getElementById(website + '-keyword-input').value = '';
+        if (keyword && checkIfKeywordIsNew(keyword, website)) {
+            $.ajax({
+                url: "{% url 'add_keyword' %}",
+                type: 'POST',
+                data: {
+                    'keyword': keyword,
+                    'website': website,
+                    'price': $('#price').text(),
+                    'distance': $('#distance').text(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function(data) {
+                    $('#grid_' + website).html(data);
+                    enableTooltips();
+                    enableDropdowns()
+                }
+            });
+        }
+    }
+
+    function checkIfKeywordIsNew(keyword, website) {
+        for (k of keywords) {
+            if (k.keyword == keyword && k.website == website) {
+                return false
+            }
+        }
+        return true
+    }
+
+    function deleteKeyword(id) {
+        document.getElementById("gridItem" + id).classList.add('removed');
+        keywords = keywords.filter(function(e) { return e.id !== id })
+
+        let data = new FormData();
+        data.append('id', id);
+        data.append('task', 'delete');
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+    }
+
+    function scrapeWebsites() {
+        let data = new FormData();
+        data.append('task', 'scrape');
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+    }
+
+    document.addEventListener('DOMContentLoaded', function(event) {
+        scrapeWebsites();
+    });
+</script>
+
+{% endblock %}

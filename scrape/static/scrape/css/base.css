@@ -1,0 +1,40 @@
+@media screen {
+
+  .grid-container {
+    display: grid;
+    grid-gap: 16px;
+    grid-template-columns: repeat(auto-fit, 200px);
+  }
+
+  .grid-item {
+    color: #fefefe;
+    padding: 15px;
+    border-radius: 5px;
+  }
+
+  .grid-item span {
+    display: inline-block;
+  }
+
+  .zoom {
+    transition: transform .1s;
+  }
+
+  .zoom:hover {
+    transform: scale(1.02);
+  }
+
+  .removed {
+    display: none;
+  }
+
+  span a {
+    color: #fefefe;
+  }
+
+  span a:hover {
+    color: #F6CA83;
+    text-decoration: none;
+  }
+
+} /* end @media */

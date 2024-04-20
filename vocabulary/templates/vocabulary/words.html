@@ -1,0 +1,177 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Word list {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'vocabulary/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4><a href="/vocabulary"><span class="link">Vocabulary</span></a> | Words</h4>
+    <hr>
+    <div class="input-group mb-3">
+        <form id="searchForm" method="post" class="form-group" onkeydown="return event.key != 'Enter'">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                </div>
+                <input id="searchInput" class="form-control" type="text" placeholder="Search" oninput="updateTableOnSearch()">
+            </div>
+        </form>
+        <span style="margin-top: 5px; margin-left: 20px">
+            {% for lang in languages %}
+                <img id="flag-{{lang}}" data-language='{{lang}}' class="flag" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')">
+            {% endfor %}
+        </span>
+    </div>
+    <table id="table">
+        <tr>
+            <th id="foreignLanguageHeader" style="width: 45%">English</th>
+            <th style="width: 45%">Translation</th>
+            <th style="text-align: center">Level</th>
+            <th style="width: 40px"></th>
+        </tr>
+        {% for v in vocab %}
+            <tr id="row{{v.id}}" class="table-row {% if v.language != default_language %}lang-hide{% endif %}" data-word-1="{{v.word_1}}" data-word-2="{{v.word_2}}" data-language="{{v.language}}">
+                <td class="editable foreign" data-id="{{v.id}}" data-vocab="1">{{v.word_1}}</td>
+                <td class="editable" data-id="{{v.id}}" data-vocab="2">{{v.word_2}}</td>
+                <td style="text-align: center">{% if v.level == 10 %}<i class="fa-solid fa-crown"></i>{% else %}{{v.level}}{% endif %}</td>
+                <td style="text-align: center"><i class="highlight fas fa-trash" onclick="deleteVocab({{v.id}})" data-toggle="tooltip" data-placement="right" title="Delete" style="color: #5a6268"></i></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <section class="download-section" data-language="pt" style="display: none">
+        <br><a href="javascript:void(0)" onclick="downloadTop100PortugueseVerbs()">Download Top 100 Portuguese Verbs</a><br>
+    </section>
+</body>
+<script src="{% static 'vocabulary/index.js' %}"></script>
+<script src="{% static 'vocabulary/wanakana.min.js' %}"></script>
+<script>
+    var foreignLanguage = {{languages|safe}}[0]
+
+    function deleteVocab(id) {
+        const title = "Do you want to delete this vocab?";
+        showModalConfirm(title, function(result) {
+            var row = document.getElementById('row' + id);
+            row.parentNode.removeChild(row);
+
+            let data = new FormData();
+            data.append('id', id);
+            data.append('task', 'delete');
+
+            fetch('', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: data,
+            })
+        })
+    }
+
+    function updateTableOnSearch() {
+        var rows = document.getElementsByClassName("table-row");
+        var txt = document.getElementById("searchInput").value.toLowerCase();
+        for (row of rows) {
+            let word_1 = row.getAttribute("data-word-1").toLowerCase();
+            let word_2 = row.getAttribute("data-word-2").toLowerCase();
+            (word_1.includes(txt) || word_2.includes(txt)) ? row.classList.remove('search-hide') : row.classList.add('search-hide');
+        };
+    }
+
+    function updatePage() {
+        document.getElementById('foreignLanguageHeader').innerHTML = getLanguageName();
+        updateTableByLanguage()
+        updateDownloadSection()
+    }
+
+    function updateTableByLanguage() {
+        var rows = document.getElementsByClassName("table-row");
+        for (row of rows) {
+            (row.getAttribute("data-language") == foreignLanguage) ? row.classList.remove('lang-hide') : row.classList.add('lang-hide');
+        };
+    }
+
+    function updateDownloadSection() {
+        var downloadSections = document.getElementsByClassName("download-section");
+        for (section of downloadSections) {
+            section.style.display = (section.getAttribute("data-language") == foreignLanguage) ? 'block' : 'none';
+        };
+    }
+
+    function downloadTop100PortugueseVerbs() {
+        let data = new FormData();
+        data.append('task', 'download');
+        data.append('content', 'top-100-pt-verbs');
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+        .then(response => {
+            window.location.href = "/vocabulary";
+        })
+    }
+
+    // Edit vocab in table
+    const cells = document.querySelectorAll('td.editable');
+
+    cells.forEach(cell => {
+        cell.addEventListener('click', function(event) {
+            if (event.target.tagName === 'INPUT') {
+                return; // if already in edit mode, do nothing
+            }
+
+            const text = this.innerText.trim();
+            const id = this.getAttribute('data-id');
+            const vocab = this.getAttribute('data-vocab');
+            this.innerHTML = `<input type="text" value="${text}">`;
+            const input = this.querySelector('input');
+            input.focus();
+
+            if (cell.className.includes('foreign') && foreignLanguage == 'jp') {
+                toggleHiraganaInput(input, true);
+            } else {
+                toggleHiraganaInput(input, false);
+            }
+
+            input.addEventListener('blur', function() {
+                finishEditing(this);
+            });
+
+            input.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    finishEditing(this);
+                }
+            });
+
+            function finishEditing(inputField) {
+                const editedWord = inputField.value;
+                cell.innerHTML = editedWord;
+                if (editedWord !== text) {
+                    let data = new FormData();
+                    data.append('id', id);
+                    data.append('task', 'edit');
+                    data.append('vocab', vocab);
+                    data.append('value', editedWord);
+
+                    fetch('', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: data,
+                    })
+                }
+            };
+        });
+    });
+</script>
+{% endblock %}

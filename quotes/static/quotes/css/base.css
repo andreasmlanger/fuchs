@@ -1,0 +1,31 @@
+@media screen {
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: 100%;
+  }
+
+  .grid-item {
+    color: #fefefe;
+    background-color: #006D77;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    transition: transform .1s;
+    padding: 20px;
+  }
+
+
+  .grid-item span {
+    display: inline-block;
+  }
+
+  .grid-item:hover {
+    transform: scale(1.005);
+  }
+
+  .hide, .removed {
+    display: none;
+  }
+
+} /* end @media */

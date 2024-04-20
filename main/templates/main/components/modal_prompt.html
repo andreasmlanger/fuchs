@@ -1,0 +1,33 @@
+<div class="modal fade" id="modalPrompt" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="modalPromptTitle" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input id="modalPromptInput" class="form-control" autocomplete="off" type="text" onkeydown="pressEnterToSave(this)">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+                <button id="modalPromptOkButton" type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#modalPrompt').on('shown.bs.modal', function () {
+        $('#modalPromptInput').trigger('focus');
+    })
+
+    function showModalPrompt(title, value, callback) {
+        document.getElementById('modalPromptTitle').innerHTML = title;
+        document.getElementById('modalPromptInput').value = value;
+        $('#modalPromptOkButton').off('click').click(function() {
+            let value = document.getElementById('modalPromptInput').value;
+            callback(value);
+        });
+        $('#modalPrompt').modal('show');
+    }
+</script>

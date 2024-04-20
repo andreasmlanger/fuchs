@@ -1,0 +1,274 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load custom_tags %}
+{% block title %} Study {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'vocabulary/style.css' %}">
+<style>
+    .glasses {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 1;
+        user-select: none;
+    }
+    {% if amblyopia %}
+        body {
+            background-color: #fff;
+        }
+        .color-1 {
+            color: #FF8080;
+            font-size: 32px;
+        }
+
+        .color-2 {
+            color: #2AE6E9;
+            font-size: 32px;
+        }
+    {% endif %}
+</style>
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4><a href="/vocabulary">Vocabulary</a> | Verbs</h4>
+    <hr>
+    {% if verbs %}
+        <div class="glasses button zoom">
+            <a href="{% if amblyopia %} {% url 'verbs' %} {% else %} {% url 'verbs' %}?q=amblyopia {% endif %}"><img src="/static/vocabulary/glasses.png" width="40px"/></a>
+        </div>
+        <section id="main" style="text-align: center">
+            <h2><span id="infinitive">{{verbs.0.infinitive}} </span><span id="translation" style="font-size: 16px" data-toggle="tooltip" data-placement="right" title="{{verbs.0.translation}}"><i class="fa-solid fa-language"></i></span></h2>
+            <h6><span id="tense">{{verbs.0.tense}} </span><span id="info" data-toggle="tooltip" data-placement="right" title="{{verbs.0.info}}"><i class="fa-regular fa-circle-question"></i></span></h6>
+            <div id="drag-and-drop" style="display: {% if verbs.0.level|divisibleby:2 %} block {% else %} none {% endif %}">
+                <section class="draggable-items">
+                    {% for pronoun in verbs.0.pronouns|shuffle %}
+                        <span id="draggable{{forloop.counter}}" class="draggable color-1" draggable="true" data-form="{{verbs.0|hashed:pronoun}}">{{verbs.0|hashed:pronoun}}</span>
+                    {% endfor %}
+                </section>
+                <section class="matching-pairs">
+                    {% for pronoun in verbs.0.pronouns|shuffle %}
+                        <div class="matching-pair">
+                            <span id="label{{forloop.counter}}" class="label color-2">{{pronoun}}</span>
+                            <span id="droppable{{forloop.counter}}" class="droppable" data-form="{{verbs.0|hashed:pronoun}}"></span>
+                        </div>
+                    {% endfor %}
+                </section>
+            </div>
+            <div id="text-input" style="display: {% if verbs.0.level|divisibleby:2 %} none {% else %} block {% endif %}">
+                <section class="matching-pairs">
+                    <form id="submitVerbForm" method="post" novalidate>
+                    {% for pronoun in verbs.0.pronouns|shuffle %}
+                        <div class="matching-pair">
+                            <span id="label2{{forloop.counter}}" class="label">{{pronoun}}</span>
+                            <input id="verb-input{{forloop.counter}}" type="text" class="form-control verb-input" placeholder="Type your answer" autocomplete="off" data-form="{{verbs.0|hashed:pronoun}}" required autofocus>
+                        </div>
+                    {% endfor %}
+                    </form>
+                </section>
+            </div>
+        </section>
+    {% else %}
+        <p>Nothing to do here! Add some new verbs to your vocabulary first!</p>
+    {% endif %}
+</body>
+<script src="{% static 'vocabulary/index.js' %}"></script>
+<script>
+    var verbs = {{verbs|safe}};
+    var activeVerb = verbs[0];
+    verbs = verbs.slice(1);
+
+    let correct = 0;
+    let incorrect = 0;
+    let draggableElements;
+    let droppableElements;
+
+    initializeDragAndDrop();
+
+    // Drag & drop functionality (https://codepen.io/Coding_Journey/pen/LYPNmpe | https://web.dev/drag-and-drop/)
+
+    function initializeDragAndDrop() {
+        draggableElements = document.querySelectorAll(".draggable");
+        droppableElements = document.querySelectorAll(".droppable");
+
+        draggableElements.forEach(e => {
+            e.addEventListener("dragstart", dragStart);
+            e.addEventListener("touchstart", dragStart);
+        });
+
+        droppableElements.forEach(e => {
+            e.addEventListener("dragenter", dragEnter);
+            e.addEventListener("touchenter", dragEnter);
+            e.addEventListener("dragover", dragOver);
+            e.addEventListener("touchover", dragOver);
+            e.addEventListener("dragleave", dragLeave);
+            e.addEventListener("touchleave", dragLeave);
+            e.addEventListener("drop", drop);
+        });
+    }
+
+    function dragStart(event) {
+        event.dataTransfer.setData("text", event.target.id);
+    }
+
+    function dragEnter(event) {
+        if (event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+            event.target.classList.add("droppable-hover");
+        }
+    }
+
+    function dragOver(event) {
+        if (event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+            event.preventDefault();
+        }
+    }
+
+    function dragLeave(event) {
+        if (event.target.classList && event.target.classList.contains("droppable") && !event.target.classList.contains("dropped")) {
+            event.target.classList.remove("droppable-hover");
+        }
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        const draggableElement = document.getElementById(event.dataTransfer.getData("text"));
+        event.target.classList.remove("droppable-hover");
+        var isCorrect = draggableElement.getAttribute("data-form") === event.target.getAttribute("data-form");
+        var deltaLevel = 0;
+        if (isCorrect) {
+            event.target.classList.add("dropped");
+            draggableElement.classList.add("dragged");
+            draggableElement.setAttribute("draggable", "false");
+            event.target.innerHTML = draggableElement.getAttribute('data-form');
+            correct++;
+        } else {
+            incorrect++;
+        }
+        if (correct === 4) {
+            if (incorrect == 0) {
+                deltaLevel = 1;
+            }
+            updateLevel(activeVerb.id, deltaLevel);
+            setTimeout(() => {
+                displayNextVerb();
+            }, 500)
+        }
+    }
+
+    function displayNextVerb() {
+        if (verbs.length > 0) {
+            correct = 0;
+            incorrect = 0;
+            activeVerb = randomItem(verbs)[0];
+
+            document.getElementById("verb-input1").focus();
+            document.getElementById("infinitive").innerHTML = activeVerb.infinitive + " ";
+            document.getElementById("tense").innerHTML = activeVerb.tense + " ";
+            document.getElementById("info").setAttribute("data-original-title", activeVerb.info);
+            document.getElementById("translation").setAttribute("data-original-title", activeVerb.translation);
+
+            for (let j = 0; j < 2; j++) {
+                shuffleArray(activeVerb.pronouns);  // shuffle twice!
+                for (const [i, pronoun] of activeVerb.pronouns.entries()) {
+                    if (j == 0) {
+                        var draggable = document.getElementById('draggable' + (i + 1).toString());
+                        draggable.innerHTML = activeVerb[pronoun];
+                        draggable.setAttribute("draggable", "true");
+                        draggable.setAttribute("data-form", activeVerb[pronoun]);
+                        draggable.classList.add("draggable");
+                        draggable.classList.remove("dragged");
+
+                        var verbInput = document.getElementById('verb-input' + (i + 1).toString());
+                        verbInput.value = "";
+                        verbInput.setAttribute("data-form", activeVerb[pronoun]);
+                        verbInput.style.backgroundColor = 'white';
+
+                        var label2 = document.getElementById('label2' + (i + 1).toString());
+                        label2.innerHTML = pronoun;
+                    } else {
+                        var label = document.getElementById('label' + (i + 1).toString());
+                        var droppable = document.getElementById('droppable' + (i + 1).toString());
+                        label.innerHTML = pronoun;
+                        droppable.innerHTML = "";
+                        droppable.setAttribute("data-form", activeVerb[pronoun]);
+                        droppable.classList.add("droppable");
+                        droppable.classList.remove("dropped")
+                    }
+                }
+            }
+            initializeDragAndDrop();
+        } else {
+            document.getElementById('main').innerHTML = "Congratulations, you're done for now!"
+        }
+    }
+
+    function updateLevel(id, deltaLevel) {
+        let done = verbs.length === 0
+        let data = new FormData();
+        data.append('id', id);
+        data.append('delta_level', deltaLevel);
+        data.append('task', 'update_level');
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+        .then(response => {
+            if (done) {
+                window.location.href = "/vocabulary";
+            }
+        })
+    }
+
+    function checkInput(form) {
+        var correct = 0;
+        var inputFields = document.querySelectorAll('.verb-input')
+        var deltaLevel;
+        inputFields.forEach(e => {
+            var correctForm = e.getAttribute("data-form");
+            var inputForm = e.value;
+            if (inputForm === correctForm) {
+                correct++;
+                e.style.backgroundColor = "#d4edda";
+            } else if (deAccent(inputForm) === deAccent(correctForm)) {
+                correct++;
+                e.style.backgroundColor = "#f7f7d9";
+            } else {
+                e.style.backgroundColor = "#f8d7da";
+            }
+            e.value = correctForm;
+        });
+        if (correct === 4) {
+            deltaLevel = 1;
+        } else {
+            deltaLevel = -2;
+        }
+        updateLevel(activeVerb.id, deltaLevel);
+        setTimeout(() => {
+            displayNextVerb();
+        }, 2000)
+    }
+
+    $('body').on('keydown', 'input, select', function(e) {
+        if (e.key === "Enter") {
+            var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+            focusable = form.find('input').filter(':enabled');
+
+            next = focusable.eq(focusable.index(this)+1);
+            if (next.length) {
+                next.focus();
+                next.select();
+            } else {
+                checkInput(form);
+            }
+            return false;
+        }
+    });
+</script>
+
+{% endblock %}

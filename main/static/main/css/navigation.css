@@ -1,0 +1,93 @@
+@media screen {
+
+  #menuToggle {
+    position: fixed;
+    top: 30px;
+    left: 20px;
+    width: 32px;
+    z-index: 2;
+  }
+
+  #menuToggle a {
+    text-decoration: none;
+    color: #232323;
+    transition: color 0.3s ease;
+  }
+
+  #menuToggle a:hover {
+    color: #ED254E;
+  }
+
+  #menuToggle input {
+    display: block;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: -5px;
+    cursor: pointer;
+    opacity: 0; /* invisible checkbox */
+    z-index: 3; /* placed over the hamburger */
+  }
+
+  #menuToggle span {
+    display: block;
+    width: 32px;
+    height: 4px;
+    margin-bottom: 5px;
+    position: relative;
+    background: #ED254E;
+    border-radius: 3px;
+    z-index: 2; /* hamburger */
+    transform-origin: 4px 0px;
+    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+                background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+                opacity 0.55s ease;
+  }
+
+  #menuToggle span:first-child {
+    transform-origin: 0% 0%;
+  }
+
+  #menuToggle span:nth-last-child(2) {
+    transform-origin: 0% 100%;
+  }
+
+  #menuToggle input:checked ~ span {
+    transform: rotate(45deg) translate(4px, -2px);  /* Rotate top burger down */
+    background: #232323;
+  }
+
+  #menuToggle input:checked ~ span:nth-last-child(3) {
+    opacity: 0;  /* Hide middle burger */
+    transform: rotate(0deg) translate(0, 2px) scale(0.2, 0.2);
+  }
+
+  #menuToggle input:checked ~ span:nth-last-child(2) {
+    transform: rotate(-45deg) translate(2px, 6px);  /* Rotate bottom burger up */
+  }
+
+  #menu {
+    position: fixed;
+    height: 100vh;
+    width: 80px;
+    margin: -67px 0 0 -32px;
+    padding: 32px;
+    padding-top: 75px;
+    background: transparent;
+    list-style-type: none;
+    transform: translate(-100%, 0);
+    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0);
+  }
+
+  #menu li {
+    width: 28px;
+    padding: 1px 0;
+    text-align: center;
+    font-size: 22px;
+  }
+
+  #menuToggle input:checked ~ ul {
+    transform: none;  /* Slide from the left */
+  }
+
+} /* end @media */

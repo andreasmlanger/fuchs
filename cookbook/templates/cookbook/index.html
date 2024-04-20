@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Cookbook {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'cookbook/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>{% if ingredients %}<a href="/cookbook">Cookbook</a> {% else %} Cookbook {% endif %}</h4>
+    <hr>
+    <div id="main">
+        {% include "cookbook/main.html" %}
+    </div>
+</body>
+{% endblock %}

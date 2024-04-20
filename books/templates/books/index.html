@@ -1,0 +1,158 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Books {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'books/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Books</h4>
+    <hr>
+    <div id="grid" class="grid-container">
+        {% include "books/main.html" %}
+    </div>
+    <div id="message"></div>
+    <div id="modal" class="modal">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="dropArea" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)" ondragleave="dragLeaveHandler(event)">
+            <input type="file" id="coverInput" accept="image/*" />
+            <p id="dropAreaText"></p>
+        </div>
+        <div class="input-container">
+            <input type="text" id="urlInput" onfocus="clearPlaceholder(this)" onblur="restorePlaceholder(this)"/>
+            <button class="btn custom-btn" onclick="uploadCover()">Upload <i class="fa-solid fa-cloud-arrow-up"></i></button>
+        </div>
+    </div>
+</body>
+
+<script>
+    function openModal() {
+        document.getElementById('modal').style.display = 'block';
+        document.getElementById('coverInput').value = '';
+        document.getElementById('urlInput').value = '';
+        document.getElementById('dropArea').style.backgroundImage = '';
+        document.getElementById('dropAreaText').innerHTML = 'Drag & Drop<br>new<br>Book Cover<br>here!';
+        restorePlaceholder(urlInput);
+    }
+    
+    function clearPlaceholder(input) {
+        input.placeholder = '';
+    }
+    
+    function restorePlaceholder(input) {
+        input.placeholder = 'Enter Google Drive Link to Book';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        toggleInputView('none');
+    }
+
+    function uploadCover() {
+        var urlInput = document.getElementById('urlInput');
+        var drive_url = urlInput.value;
+        if (!isValidGoogleDriveUrl(drive_url)) {
+            return;
+        }
+        var coverInput = document.getElementById('coverInput');
+        var cover = coverInput.files[0];
+        if (cover) {
+            var formData = new FormData();
+            formData.append('cover', cover);
+            formData.append('drive_url', drive_url);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            $.ajax({
+                url: "{% url 'upload_cover' %}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    closeModal();
+                    $('#grid').html(data);
+                }
+            });
+        }
+    }
+
+    function dragOverHandler(event) {
+        event.preventDefault();
+        event.target.parentNode.style.transform = 'scale(1.02)';
+    }
+
+    function dragLeaveHandler(event) {
+        event.target.parentNode.style.transform = 'scale(1)';
+    }
+
+    // Drop cover on input
+    function dropHandler(event) {
+        event.preventDefault();
+        let file = event.dataTransfer.files[0];
+        var coverInput = document.getElementById('coverInput');
+        var dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        coverInput.files = dataTransfer.files;
+        processImage(file);
+    }
+
+    // Use click to browse
+    document.getElementById('coverInput').addEventListener('change', function(event) {
+        let file = event.target.files[0];
+        processImage(file);
+    });
+
+    function processImage(file) {
+        if (!isValidImageFile(file)) {
+            return;
+        }
+        document.getElementById('dropAreaText').innerHTML = '';
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('dropArea').style.backgroundImage = `url(${e.target.result})`;
+        };
+        reader.readAsDataURL(file);
+        toggleInputView('flex');
+    }
+
+    function isValidImageFile(file) {
+        if (file.type != 'image/jpeg') {
+            showMessage("File is not an image!", 'danger');
+            return false;
+        }
+        if (file.name.split('.')[0].split(' - ').length !== 2) {
+            showMessage("Filename must be in the format 'title - author.jpg'!", 'danger');
+            return false;
+        }
+        return true;
+    }
+
+    function isValidGoogleDriveUrl(url) {
+        // Regular expression pattern to match Google Drive links
+        const googleDrivePattern = /^https:\/\/drive\.google\.com\/file\/d\/1[0-9a-zA-Z_-]{32}(\/view\?usp=drive_link)?$/;
+        if (!googleDrivePattern.test(url)) {
+            showMessage("No valid Google Drive link!", 'danger');
+            return false;
+        }
+        return true;
+    }
+
+    function toggleInputView(x) {
+        document.querySelectorAll('.input-container').forEach(function(container) {
+            container.style.display = x;
+        });
+    }
+
+    function showMessage(message, alert) {
+        closeModal();
+        $("#message").html('<div class="alert alert-' + alert + '">' + message + '</div>')
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove();
+            });
+        }, 2000);
+    }
+</script>
+
+{% endblock %}

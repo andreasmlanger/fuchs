@@ -1,0 +1,77 @@
+@media screen {
+
+  .badge {
+    color: white;
+    background-color: #519E8A;
+  }
+
+  .badge a {
+    color: #efefef;
+  }
+
+  .badge a:hover {
+    text-decoration: none;
+  }
+
+  h4 a {
+    color: black;
+  }
+
+  h4 a:hover {
+    color: black;
+  }
+
+  .card-header {
+    font-size: 1.3rem;
+  }
+
+  .card {
+    background-color: #f9f7f7;
+  }
+
+  img.framed {
+    border: 1px solid #779cab;
+    background: white;
+    padding: 5px;
+  }
+
+  .wordcloud {
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .wordcloud a {
+    color: #232E21;
+    alpha: 0.8;
+  }
+
+  .wordcloud a:hover {
+    color: #F42272;
+    text-decoration: none;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .fa-arrows-rotate {
+    animation-name: spin;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  .year {
+    transition: font-size 0.3s ease; /* Add a smooth transition effect */
+  }
+
+  .year:hover {
+    font-size: 20px;
+  }
+
+} /* end @media */

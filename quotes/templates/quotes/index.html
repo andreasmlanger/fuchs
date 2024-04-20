@@ -1,0 +1,87 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Quotes {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'quotes/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Quotes</h4>
+    <hr>
+    <audio controls autoplay preload='auto' style="width: 100%">
+        <source src="{% static 'quotes/media/erik-satie-gymnopedie-no-1.mp3' %}" type="audio/mpeg">
+    </audio>
+    <hr>
+    <form id="addQuoteForm" method="post">
+        <div class="input-group mb-3">
+            <input id="quote-input" type="text" class="form-control" placeholder="Type your inspirational quote here">
+            <div class="input-group-append">
+                <button class="btn btn-dark" type="submit"><i class="fa-solid fa-plus"></i></button>
+            </div>
+        </div>
+    </form>
+    <div id="main">
+        {% include "quotes/main.html" %}
+    </div>
+</body>
+<script>
+    $("#addQuoteForm").on('submit', function(e){
+        e.preventDefault();
+        var quote = document.getElementById('quote-input').value.trim();
+        $("#addQuoteForm")[0].reset();
+        if (quote) {
+            $.ajax({
+                url: "{% url 'add_quote' %}",
+                type: 'POST',
+                data: {
+                    'quote': quote,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                success: function(data) {
+                    $('#main').html(data);
+                    enableTooltips();
+                }
+            });
+        }
+    })
+
+    function deleteQuote(id) {
+        document.getElementById("gridItem" + id).classList.add('removed');
+        showOrHideSearch();
+
+        let data = new FormData();
+        data.append('id', id);
+        data.append('task', 'delete');
+        sendToBackend(data)
+    }
+
+    function showOrHideSearch() {
+        if (document.getElementsByClassName("grid-item").length == document.getElementsByClassName("removed").length) {
+            document.getElementById("toolbar").style.display = 'none'
+        }
+    }
+
+    function updateGridOnSearch() {
+        var gridItems = document.getElementsByClassName("grid-item");
+        var txt = document.getElementById("searchInput").value.toLowerCase();
+        for (item of gridItems) {
+            let quote = item.getAttribute("data-quote").toLowerCase();
+            quote.includes(txt) ? item.classList.remove('hide') : item.classList.add('hide');
+        };
+    }
+
+    function sendToBackend(data) {
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
+    }
+
+</script>
+{% endblock %}

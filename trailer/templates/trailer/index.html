@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Trailer {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'trailer/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Trailer</h4>
+    <hr>
+    <div id="main">
+        {% include "trailer/main.html" %}
+    </div>
+</body>
+{% endblock %}
