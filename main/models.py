@@ -9,6 +9,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.BinaryField(max_length=None)
     city = models.CharField(max_length=200, default='')
+    lat = models.FloatField(null=True, default=None)  # latitude of city
+    lon = models.FloatField(null=True, default=None)  # longitude of city
     objects = models.Manager()
 
 

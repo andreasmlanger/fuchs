@@ -13,9 +13,9 @@
             <input type="image" src="{% if avatar %} data:image/png;base64, {{avatar}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail"/>
         </div>
         <div class="col-1">
-            {% if city %}
+            {% if weather_forecast %}
                 <div style="margin-top: 234px;">
-                    <a href="weather"><img src="{% static icon_static_url %}" alt="{{ description }}" width="50px" data-toggle="tooltip" data-placement="left" title="{{description}}, {{temperature}}°C"></a>
+                    <a href="weather"><img src="{% static weather_forecast.icon_static_url %}" alt="{{ weather_forecast.description }}" width="50px" data-toggle="tooltip" data-placement="left" title="{{weather_forecast.description}}, {{weather_forecast.temperature}}°C"></a>
                 </div>
             {% endif %}
         </div>
@@ -83,7 +83,7 @@
                         <div class="form-group">
                             {% csrf_token %}
                             {% if user.is_superuser %}
-                                <span class="highlight" onclick="vacuumDatabase()" style="padding: 2px" data-toggle="tooltip" data-placement="left" title="Vacuum Database"><i class="fa-solid fa-snowplow"></i><span>
+                                <span class="highlight" onclick="vacuumDatabase()" style="padding: 2px" data-toggle="tooltip" data-placement="left" title="Vacuum Database"><i class="fa-solid fa-snowplow"></i></span>
                             {% else %}
                                 <span class="highlight" onclick="deleteAccount()" style="padding: 2px" data-toggle="tooltip" data-placement="left" title="Delete Account"><i class="fas fa-skull highlight"></i></span>
                             {% endif %}

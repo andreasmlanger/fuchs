@@ -1,84 +1,88 @@
+"""
+Weather API: https://open-meteo.com/en/docs/
+Icons: https://icons8.com/icon/set/weather/color-glass--static
+"""
+
+import pandas as pd
 import requests
 from datetime import datetime
-from mysite.settings import config
+
+WEATHER_BASE_URL = 'https://api.open-meteo.com/v1/forecast?'
+CURRENT = 'temperature_2m,weather_code'
+DAILY = 'weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,uv_index_max'
+
+# WMO Codes with description and icon number
+WMO_CODES = {
+    0: ('clear sky', 0),
+    1: ('mainly clear', 1),
+    2: ('partly cloudy', 1),
+    3: ('overcast', 3),
+    45: ('fog', 45),
+    48: ('fog', 45),
+    51: ('light drizzle', 61),
+    53: ('moderate drizzle', 61),
+    55: ('dense drizzle', 61),
+    56: ('light freezing drizzle', 61),
+    57: ('dense freezing drizzle', 61),
+    61: ('slight rain', 61),
+    63: ('moderate rain', 63),
+    65: ('heavy rain', 65),
+    66: ('light freezing rain', 61),
+    67: ('heavy freezing rain', 65),
+    71: ('slight snow fall', 71),
+    73: ('moderate snow fall', 73),
+    75: ('heavy snow fall', 73),
+    77: ('snow grains', 73),
+    80: ('slight rain showers', 61),
+    81: ('moderate rain showers', 63),
+    82: ('violent rain showers', 65),
+    85: ('slight snow showers', 71),
+    86: ('heavy snow showers', 73),
+    95: ('thunderstorm', 95),
+    96: ('thunderstorm with slight hail', 95),
+    99: ('thunderstorm with heavy hail', 95),
+}
 
 
-WEATHER_API_KEY = config.get(f'WEATHER_API_KEY')
-WEATHER_BASE_URL = 'http://api.openweathermap.org/data/2.5/'
+def get_weather_description(wmo_code):
+    return WMO_CODES[wmo_code][0]
 
 
-def get_weather_now(city):
-    url = f'{WEATHER_BASE_URL}weather?APPID={WEATHER_API_KEY}&q={city}'
+def get_weather_icon_url(wmo_code):
+    return f'main/weather_icons/{WMO_CODES[wmo_code][1]}.png'
+
+
+def get_weather_forecast(lat, lon, period='daily'):
+    url = f'{WEATHER_BASE_URL}latitude={lat}&longitude={lon}&timezone=auto&current={CURRENT}&daily={DAILY}'
     response = requests.get(url)
 
     if response.status_code == 200:
         data = response.json()
-        description = data['weather'][0]['main']
-        icon_static_url = get_static_weather_icon_url(data['weather'][0]['icon']).replace('n.png', 'd.png')
-        temperature = format_temperature_in_celsius(data['main']['temp'])
-    else:
-        description = 'Error'
-        icon_static_url = ''
-        temperature = 'N.A.'
 
-    return {'temperature': temperature, 'description': description, 'icon_static_url': icon_static_url}
-
-
-def get_static_weather_icon_url(icon_code):
-    return f'main/weather_icons/{icon_code}.png'
-
-
-def format_temperature_in_celsius(t):
-    return int(round(t - 273.15, 0))
-
-
-def get_coordinates(city):
-    base_url = 'https://nominatim.openstreetmap.org/search'
-    params = {
-        'q': city,
-        'format': 'json',
-        'limit': 1
-    }
-    response = requests.get(base_url, params=params)
-    data = response.json()
-    if data:
-        return {'Latitude': float(data[0]['lat']), 'Longitude': float(data[0]['lon'])}
-
-
-def get_weather_forecast(city):
-    coords = get_coordinates(city)
-    lat, lon = coords['Latitude'], coords['Longitude']
-    url = f'{WEATHER_BASE_URL}onecall?lat={lat}&lon={lon}&exclude=current,minutely,hourly,alerts&appid={WEATHER_API_KEY}'
-    response = requests.get(url)
-
-    def timestamp_to_date(timestamp, style):
-        return datetime.fromtimestamp(timestamp).strftime(style)
-
-    if response.status_code == 200:
-        data = response.json()
-        forecast = []
-        for d in data['daily']:
-            w = {
-                'weekday': timestamp_to_date(d['dt'], style='%a %d'),
-                'sunrise': timestamp_to_date(d['sunrise'], style='%H:%M'),
-                'sunset': timestamp_to_date(d['sunset'], style='%H:%M'),
-                'min': format_temperature_in_celsius(d['temp']['min']),
-                'max': format_temperature_in_celsius(d['temp']['max']),
-                'bar_height': (d['temp']['max'] - d['temp']['min']) * 10,
-                'weather': d['weather'][0]['main'],
-                'description': d['weather'][0]['description'],
-                'icon_static_url': get_static_weather_icon_url(d['weather'][0]['icon']),
-                'clouds': d['clouds'],
-                'rain': d['rain'] if 'rain' in d else 0,
-                'uvi': d['uvi'],
+        if period == 'current':
+            forecast = {
+                'temperature': int(data['current']['temperature_2m']),
+                'description': get_weather_description(data['current']['weather_code']),
+                'icon_static_url': get_weather_icon_url(data['current']['weather_code'])
             }
-            forecast.append(w)
-        temp_hi = max([w['max'] for w in forecast])
-        temp_lo = min([w['min'] for w in forecast])
-        for w in forecast:
-            w['bar_offset_t'] = (temp_hi - w['max']) * 10
-            w['bar_offset_b'] = (w['min'] - temp_lo) * 10
-    else:
-        forecast = 'Error'
+            return {'weather_forecast': forecast}
 
-    return {'weather_forecast': forecast}
+        elif period == 'daily':
+            df = pd.DataFrame(data['daily'])
+            df.rename(columns={'temperature_2m_max': 'max', 'temperature_2m_min': 'min'}, inplace=True)
+            df['weekday'] = df['time'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d').strftime('%a'))
+            df['sunrise'] = df['sunrise'].apply(lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M').strftime('%H:%M'))
+            df['sunset'] = df['sunset'].apply(lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M').strftime('%H:%M'))
+            df['bar_height'] = (df['max'] - df['min']) * 10
+            df['description'] = df['weather_code'].apply(get_weather_description)
+            df['icon_static_url'] = df['weather_code'].apply(get_weather_icon_url)
+
+            temp_hi = df['max'].max()
+            temp_lo = df['min'].min()
+
+            df['bar_offset_t'] = (temp_hi - df['max']) * 10
+            df['bar_offset_b'] = (df['min'] - temp_lo) * 10
+
+            return {'weather_forecast': df.to_records()}
+
+    return {'weather_forecast': 0}

@@ -38,53 +38,56 @@
 <body>
     <h4>Weather</h4>
     <hr>
-    {% csrf_token %}
-    <table>
-        <tr>
-            {% for w in weather_forecast %}
-                <th>{{ w.weekday }}</th>
-            {% endfor %}
-        </tr>
-        <tr>
-            {% for w in weather_forecast %}
-                <td>
-                    <div>
-                        <img src="{% static w.icon_static_url %}" alt="{{ w.description }}" width="40px" data-toggle="tooltip" data-placement="bottom" title="{{ w.description }}">
-                    </div>
-                </td>
-            {% endfor %}
-        </tr>
-        <tr>
-            {% for w in weather_forecast %}
-                <td>
-                    {% if w.rain %}
-                        <div><i class="fa-solid fa-umbrella"></i> {{ w.rain }} mm</div>
-                    {% elif w.uvi > 5 %}
-                        <div><i class="fa-solid fa-sun" style="color: red"></i> {{ w.uvi }} UV</div>
-                    {% endif %}
-                </td>
-            {% endfor %}
-        </tr>
-        <tr>
-            {% for w in weather_forecast %}
-                <td>
-                    <div style="height: {{ w.bar_offset_t }}px"></div>
-                    <div>{{ w.max }}°C</div>
-                    <div class="temperature-bar" style="height: {{ w.bar_height }}px;"></div>
-                    <div>{{ w.min }}°C</div>
-                    <div style="height: {{ w.bar_offset_b }}px"></div>
-                </td>
-            {% endfor %}
-        </tr>
-        <tr>
-            {% for w in weather_forecast %}
-                <td>
-                    <div><i class="fa-solid fa-sun"></i> {{ w.sunrise }}</div>
-                    <div><i class="fa-solid fa-moon"></i> {{ w.sunset }}</div>
-                </td>
-            {% endfor %}
-        </tr>
-    </table>
+    {% if weather_forecast|length > 0 %}
+        <table>
+            <tr>
+                {% for w in weather_forecast %}
+                    <th>{{ w.weekday }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for w in weather_forecast %}
+                    <td>
+                        <div>
+                            <img src="{% static w.icon_static_url %}" alt="{{ w.description }}" width="40px" data-toggle="tooltip" data-placement="bottom" title="{{ w.description }}">
+                        </div>
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for w in weather_forecast %}
+                    <td>
+                        {% if w.precipitation_sum %}
+                            <div><i class="fa-solid fa-umbrella"></i> {{ w.precipitation_sum }} mm</div>
+                        {% elif w.uv_index_max > 5 %}
+                            <div><i class="fa-solid fa-sun" style="color: red"></i> {{ w.uv_index_max }} UV</div>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for w in weather_forecast %}
+                    <td>
+                        <div style="height: {{ w.bar_offset_t }}px"></div>
+                        <div>{{ w.max }}°C</div>
+                        <div class="temperature-bar" style="height: {{ w.bar_height }}px;"></div>
+                        <div>{{ w.min }}°C</div>
+                        <div style="height: {{ w.bar_offset_b }}px"></div>
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for w in weather_forecast %}
+                    <td>
+                        <div><i class="fa-solid fa-sun"></i> {{ w.sunrise }}</div>
+                        <div><i class="fa-solid fa-moon"></i> {{ w.sunset }}</div>
+                    </td>
+                {% endfor %}
+            </tr>
+        </table>
+    {% else %}
+        <p>Please enter a valid city name in your profile to see weather forecast here!</p>
+    {% endif %}
 </body>
 
 {% endblock %}

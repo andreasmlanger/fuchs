@@ -1,4 +1,5 @@
 from PIL import Image
+import requests
 import base64
 from datetime import date, datetime, timedelta
 from io import BytesIO
@@ -20,6 +21,20 @@ def get_avatar(request):
         return decode_bytes(request.user.profile.avatar)
     except AttributeError:
         return None
+
+
+def get_lat_and_lon(city):
+    base_url = 'https://nominatim.openstreetmap.org/search'
+    params = {
+        'q': city,
+        'format': 'json',
+        'limit': 1
+    }
+    response = requests.get(base_url, params=params)
+    data = response.json()
+    if data:
+        return float(data[0]['lat']), float(data[0]['lon'])
+    return None, None
 
 
 def decode_bytes(b):

@@ -8,7 +8,7 @@ import os
 from .forms import UpdateProfile
 from .scheduler import run_scheduling
 from .utils import *
-from .weather import get_weather_forecast, get_weather_now
+from .weather import get_weather_forecast
 
 
 @login_required
@@ -44,6 +44,7 @@ def account(request):
             user.first_name = form.cleaned_data['first_name']
             user.last_name = form.cleaned_data['last_name']
             user.profile.city = form.cleaned_data['city']
+            user.profile.lat, user.profile.lon = get_lat_and_lon(user.profile.city)
             user.email = form.cleaned_data['email']
             if request.FILES.get('avatar'):
                 user.profile.avatar = uploaded_image_to_base64(form.cleaned_data['avatar'])
@@ -82,15 +83,15 @@ def account(request):
         apps[app]['notification'] = user.notifications.get(app=app).email
 
     # Weather API
-    weather_now = get_weather_now(user.profile.city)
+    weather_current = get_weather_forecast(lat=request.user.profile.lat, lon=request.user.profile.lon, period='current')
 
-    return render(request, 'main/account.html', profile | weather_now | {'apps': apps})
+    return render(request, 'main/account.html', profile | weather_current | {'apps': apps})
 
 
 @login_required
 def weather(request):
     # Weather API
-    weather_forecast = get_weather_forecast(request.user.profile.city)
+    weather_forecast = get_weather_forecast(lat=request.user.profile.lat, lon=request.user.profile.lon)
 
     return render(request, 'main/weather.html', weather_forecast | {'avatar': get_avatar(request)})
 
