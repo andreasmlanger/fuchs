@@ -11,11 +11,14 @@
         <div class="col-2">
             <br>
             <input type="image" src="{% if avatar %} data:image/png;base64, {{avatar}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail"/>
+            <div class="text-center">
+                <a class="highlight" style="font-size: 22px;" href="/blood" data-toggle="tooltip" data-placement="left" title="Blood"><i class="fa-solid fa-laptop-medical"></i></a>
+            </div>
         </div>
         <div class="col-1">
             {% if weather_forecast %}
-                <div style="margin-top: 234px;">
-                    <a href="weather"><img src="{% static weather_forecast.icon_static_url %}" alt="{{ weather_forecast.description }}" width="50px" data-toggle="tooltip" data-placement="left" title="{{weather_forecast.description}}, {{weather_forecast.temperature}}°C"></a>
+                <div class="text-right" style="margin-top: 240px;">
+                    <a href="weather"><img src="{% static weather_forecast.icon_static_url %}" alt="{{ weather_forecast.description }}" width="48px" data-toggle="tooltip" data-placement="left" title="{{weather_forecast.description}}, {{weather_forecast.temperature}}°C"></a>
                 </div>
             {% endif %}
         </div>
@@ -83,9 +86,9 @@
                         <div class="form-group">
                             {% csrf_token %}
                             {% if user.is_superuser %}
-                                <span class="highlight" onclick="vacuumDatabase()" style="padding: 2px" data-toggle="tooltip" data-placement="left" title="Vacuum Database"><i class="fa-solid fa-snowplow"></i></span>
+                                <span class="highlight" onclick="vacuumDatabase()" data-toggle="tooltip" data-placement="left" title="Vacuum Database"><i class="fa-solid fa-snowplow"></i></span>
                             {% else %}
-                                <span class="highlight" onclick="deleteAccount()" style="padding: 2px" data-toggle="tooltip" data-placement="left" title="Delete Account"><i class="fas fa-skull highlight"></i></span>
+                                <span class="highlight" onclick="deleteAccount()" data-toggle="tooltip" data-placement="left" title="Delete Account"><i class="fas fa-skull highlight"></i></span>
                             {% endif %}
                         </div>
                     </div>

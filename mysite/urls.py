@@ -11,6 +11,7 @@ urlpatterns = [
     path('', include('django.contrib.auth.urls')),
     path('', include('main.urls')),
     path('', include('blog.urls')),
+    path('', include('blood.urls')),
     path('', include('books.urls')),
     path('', include('cookbook.urls')),
     path('', include('cycle.urls')),

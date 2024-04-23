@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'main',
     'registration',
     'blog',
+    'blood',
     'books',
     'cookbook',
     'cycle',

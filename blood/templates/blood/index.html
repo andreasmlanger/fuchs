@@ -1,0 +1,67 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Blood {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'blood/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h4>Blood</h4>
+    <hr>
+    <div class="row">
+        <div class="col-3">
+            <form id="bloodPressureForm">
+                <label for="systolicInput">Systolic (mm Hg)</label>
+                <input type="number" class="form-control mb-3" id="systolicInput" name="systolic" required>
+                <label for="diastolicInput">Diastolic (mm Hg)</label>
+                <input type="number" class="form-control mb-3" id="diastolicInput" name="diastolic" required>
+                <label for="pulseInput">Pulse</label>
+                <input type="number" class="form-control mb-3" id="pulseInput" name="pulse" required>
+                <button type="submit" class="btn btn-dark">Add</button>
+            </form>
+        </div>
+        <div class="col-9">
+            <div id="bokeh">{{ bokeh_html | safe }}</div>
+        </div>
+    </div>
+</body>
+<script>
+    $(document).ready(function() {
+        $('#bloodPressureForm').submit(function(event) {
+            event.preventDefault();
+            let formData = createFormData();
+            sendToBackend(formData);
+        });
+    });
+
+    function createFormData() {
+        let formData = new FormData();
+        formData.append('systolic', $('#systolicInput').val());
+        formData.append('diastolic', $('#diastolicInput').val());
+        formData.append('pulse', $('#pulseInput').val());
+        $('#systolicInput').val('');
+        $('#diastolicInput').val('');
+        $('#pulseInput').val('');
+        return formData;
+    }
+
+    function sendToBackend(formData) {
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            $('#bokeh').html(data.bokeh_html);
+        })
+    }
+
+
+</script>
+{% endblock %}
