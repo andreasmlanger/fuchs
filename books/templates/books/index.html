@@ -143,16 +143,6 @@
             container.style.display = x;
         });
     }
-
-    function showMessage(message, alert) {
-        closeModal();
-        $("#message").html('<div class="alert alert-' + alert + '">' + message + '</div>')
-        window.setTimeout(function() {
-            $(".alert").fadeTo(500, 0).slideUp(500, function(){
-                $(this).remove();
-            });
-        }, 2000);
-    }
 </script>
 
 {% endblock %}

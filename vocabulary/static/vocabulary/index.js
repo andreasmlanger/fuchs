@@ -40,10 +40,6 @@ function editDistance(s1, s2) {
     return costs[s2.length];
 }
 
-function showMessage(message, alert) {
-    $("#message").html('<div class="alert alert-' + alert + '">' + message + '</div>')
-}
-
 function changeLanguage(lang) {
     var activeFlag = document.getElementById('flag-' + lang);
     foreignLanguage = activeFlag.getAttribute('data-language');

@@ -24,6 +24,15 @@ function pressEnterToSave(inputElement) {
     }
 }
 
+function showMessage(message, alert) {
+    $("#message").html('<div class="alert alert-' + alert + '">' + message + '</div>')
+    window.setTimeout(function() {
+        $(".alert").fadeTo(500, 0).slideUp(500, function(){
+            $(this).remove();
+        });
+    }, 2000);
+}
+
 const shuffleArray = array => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
