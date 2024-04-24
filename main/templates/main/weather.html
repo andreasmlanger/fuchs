@@ -27,7 +27,6 @@
       position: relative;
       text-align: center;
       width: 20px;
-      background-color: #fdd020;
       left: 50%;
       transform: translateX(-50%);
     }
@@ -59,7 +58,7 @@
                     <td>
                         {% if w.precipitation_sum %}
                             <div><i class="fa-solid fa-umbrella"></i> {{ w.precipitation_sum }} mm</div>
-                        {% elif w.uv_index_max > 5 %}
+                        {% elif w.uv_index_max > 7 %}
                             <div><i class="fa-solid fa-sun" style="color: red"></i> {{ w.uv_index_max }} UV</div>
                         {% endif %}
                     </td>
@@ -70,7 +69,7 @@
                     <td>
                         <div style="height: {{ w.bar_offset_t }}px"></div>
                         <div>{{ w.max }}°C</div>
-                        <div class="temperature-bar" style="height: {{ w.bar_height }}px;"></div>
+                        <div class="temperature-bar" style="height: {{ w.bar_height }}px; background-color: {{ w.color }};"></div>
                         <div>{{ w.min }}°C</div>
                         <div style="height: {{ w.bar_offset_b }}px"></div>
                     </td>

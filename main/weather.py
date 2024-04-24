@@ -3,6 +3,7 @@ Weather API: https://open-meteo.com/en/docs/
 Icons: https://icons8.com/icon/set/weather/color-glass--static
 """
 
+from bokeh.palettes import Plasma256, Viridis256
 import pandas as pd
 import requests
 from datetime import datetime
@@ -10,6 +11,7 @@ from datetime import datetime
 WEATHER_BASE_URL = 'https://api.open-meteo.com/v1/forecast?'
 CURRENT = 'temperature_2m,weather_code'
 DAILY = 'weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,precipitation_sum,uv_index_max'
+COLORS = (Viridis256 + Plasma256[::-1])[:420]
 
 # WMO Codes with description and icon number
 WMO_CODES = {
@@ -44,6 +46,10 @@ WMO_CODES = {
 }
 
 
+def get_color(x):
+    return COLORS[int(max(0, min(1, (x + 20) / 50)) * len(COLORS))]
+
+
 def get_weather_description(wmo_code):
     return WMO_CODES[wmo_code][0]
 
@@ -73,15 +79,16 @@ def get_weather_forecast(lat, lon, period='daily'):
             df['weekday'] = df['time'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d').strftime('%a'))
             df['sunrise'] = df['sunrise'].apply(lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M').strftime('%H:%M'))
             df['sunset'] = df['sunset'].apply(lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M').strftime('%H:%M'))
-            df['bar_height'] = (df['max'] - df['min']) * 10
+            df['bar_height'] = (df['max'] - df['min']) * 9
             df['description'] = df['weather_code'].apply(get_weather_description)
             df['icon_static_url'] = df['weather_code'].apply(get_weather_icon_url)
 
             temp_hi = df['max'].max()
             temp_lo = df['min'].min()
 
-            df['bar_offset_t'] = (temp_hi - df['max']) * 10
-            df['bar_offset_b'] = (df['min'] - temp_lo) * 10
+            df['bar_offset_t'] = (temp_hi - df['max']) * 9
+            df['bar_offset_b'] = (df['min'] - temp_lo) * 9
+            df['color'] = ((df['max'] + df['min']) / 2).apply(get_color)
 
             return {'weather_forecast': df.to_records()}
 
