@@ -36,9 +36,6 @@ def index(request):
     p1 = figure(height=280, width=900, x_axis_type='datetime', y_axis_label='mm Hg', tools=TOOLS)
     p2 = figure(height=180, width=900, x_axis_type='datetime', y_axis_label='Pulse', tools=TOOLS)
 
-    format_bokeh_plot(p1)
-    format_bokeh_plot(p2)
-
     if len(x) > 0:
         delta_x = max(x) - min(x)
         p1.x_range.start = min(x) - 0.05 * delta_x
@@ -52,6 +49,9 @@ def index(request):
 
         p2.line(x, [v[2] for v in y], line_width=3, color=colors[2], alpha=0.5, legend_label=labels[2])
         p2.scatter(x, [v[2] for v in y], size=8, color=colors[2], legend_label=labels[2])
+
+        format_bokeh_plot(p1)
+        format_bokeh_plot(p2)
 
     p = column(p1, p2)
     p.sizing_mode = 'stretch_width'
