@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from main.utils import get_avatar, is_due
@@ -85,3 +86,10 @@ def check_for_new_events(city):
     for page in random.sample(range(20), 5):
         events = events | scrape_events(city, page + 1)
     return events
+
+
+def events_muc(_):
+    user = User.objects.filter(is_superuser=True).first()
+    events = load_events(user)
+    events = [e for e in events if e['attending']]
+    return JsonResponse(events, safe=False)
