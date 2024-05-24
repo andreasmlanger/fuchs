@@ -91,5 +91,5 @@ def check_for_new_events(city):
 def events_muc(_):
     user = User.objects.filter(is_superuser=True).first()
     events = load_events(user)
-    events = [e for e in events if e['attending']]
+    events = [e for e in events if e['attending'] or not e['new']]
     return JsonResponse(events, safe=False)
