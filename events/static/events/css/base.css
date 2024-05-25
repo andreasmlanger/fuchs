@@ -41,12 +41,6 @@
     text-decoration: none;
   }
 
-  .block {
-    display: inline-block;
-    width: 305px;
-    margin-top: 10px;
-  }
-
   .small-icon {
     padding-left: 10px;
     font-size: 10pt
@@ -54,10 +48,6 @@
 
   .input-group {
     margin-right: 10px;
-  }
-
-  td {
-    height: 30px;
   }
 
   #message {

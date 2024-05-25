@@ -18,25 +18,27 @@
 <div id="grid" class="grid-container">
     {% for e in events %}
         <div id="gridItem{{e.id}}" class="grid-item" data-event="{{e.event}}" data-location="{{e.location}}" data-group="{{e.group}}" data-attending="{{e.attending}}" data-new="{{e.new}}" style="background-color: {% if e.attending %} {{color.attending}} {% elif e.new %} {{color.new}} {% else %} {{color.else}} {% endif %}">
-            <table><tr>
-                <td width="140px" class="circle">{{e.weekday}} | {{e.date_string}}</td>
-                <td width="135px" style="text-align:center">
-                    {% if e.website == 'eventbrite' %}
-                        <img src="{% static 'events/logo_eventbrite.svg' %}" alt="Logo" height="16px">
-                    {% elif e.website == 'meetup' %}
-                        <img src="{% static 'events/logo_meetup.png' %}" alt="Logo" height="28px">
-                    {% endif %}
-                </td>
-                <td width="45px" style="text-align:right">
-                    <i style="margin-right: 5px" class="pointer fa-regular fa-circle-check" data-toggle="tooltip" data-placement="top" title="Toggle Attendance" onclick="attend({{e.id}})"></i>
-                    <i class="pointer fa-regular fa-trash-can" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove({{e.id}})"></i>
-                </td>
-            </tr></table>
-            <a class="block" style="height: 50px" href="{{e.url}}" target="_blank">{{e.event}}</a><i style="vertical-align: top; margin-top: 18px" class="small-icon pointer fa-solid fa-skull" data-toggle="tooltip" data-placement="right" title="Blacklist" onclick="blacklist(`{{e.event}}`, 0)"></i>
-            {% if e.group %}
-                <span class="block" style="font-size: 10pt"><i class="fa-solid fa-user-group" style="width: 20px"></i> {{e.group}}</span><i class="small-icon pointer fa-solid fa-skull" data-toggle="tooltip" data-placement="right" title="Blacklist" onclick="blacklist(`{{e.group}}`, 2)"></i>
-            {% endif %}
-            <a class="block" style="font-size: 10pt" href="https://www.google.com/maps/search/?api=1&query={{e.latitude}},{{e.longitude}}" target="_blank"><i class="fa-solid fa-location-dot" style="width: 20px"></i> {{e.location}}</a><i class="small-icon pointer fa-solid fa-skull" data-toggle="tooltip" data-placement="right" title="Blacklist" onclick="blacklist(`{{e.location}}`, 1)"></i>
+            <table style="width: 100%;">
+                <tr style="height: 30px;">
+                    <td style="width: 140px;" class="circle">{{e.weekday}} | {{e.date_string}}</td>
+                    <td style="width: calc(100%-250px); text-align:center;">
+                        {% if e.website == 'eventbrite' %}
+                            <img src="{% static 'events/logo_eventbrite.svg' %}" alt="Logo" height="16px">
+                        {% elif e.website == 'meetup' %}
+                            <img src="{% static 'events/logo_meetup.png' %}" alt="Logo" height="28px">
+                        {% endif %}
+                    </td>
+                    <td style="width: 25px;">
+                        <i class="pointer fa-regular fa-circle-check" data-toggle="tooltip" data-placement="top" title="Toggle Attendance" onclick="attend({{e.id}})"></i>
+                    </td>
+                    <td style="width: 25px;">
+                        <i class="pointer fa-regular fa-trash-can" data-toggle="tooltip" data-placement="top" title="Remove" onclick="remove({{e.id}})"></i>
+                    </td>
+                </tr>
+                <tr style="height: 80px;"><td colspan="3"><a href="{{e.url}}" target="_blank">{{e.event}}</a></td><td><i class="small-icon pointer fa-solid fa-skull" data-toggle="tooltip" data-placement="right" title="Blacklist" onclick="blacklist(`{{e.event}}`, 0)"></i></td></tr>
+                <tr><td colspan="3">{% if e.group %}<span style="font-size: 10pt"><i class="fa-solid fa-user-group" style="width: 20px"></i> {{e.group}}</span></td><td><i class="small-icon pointer fa-solid fa-skull" data-toggle="tooltip" data-placement="right" title="Blacklist" onclick="blacklist(`{{e.group}}`, 2)"></i>{% endif %}</td></tr>
+                <tr><td colspan="3"><a style="font-size: 10pt" href="https://www.google.com/maps/search/?api=1&query={{e.latitude}},{{e.longitude}}" target="_blank"><i class="fa-solid fa-location-dot" style="width: 20px"></i> {{e.location}}</a></td><td><i class="small-icon pointer fa-solid fa-skull" data-toggle="tooltip" data-placement="right" title="Blacklist" onclick="blacklist(`{{e.location}}`, 1)"></i></td></tr>
+            </table>
         </div>
     {% empty %}
         {% if user.profile.city %}
