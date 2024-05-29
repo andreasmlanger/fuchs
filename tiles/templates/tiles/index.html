@@ -1,0 +1,85 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %} Tiles {% endblock %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'tiles/style/main.css' %}">
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+{% endblock %}
+
+{% block content %}
+<body>
+  <div class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+        <div class="container">
+    <div class="heading" style="display: none;">
+      <h1 class="title">2048</h1>
+      <div class="scores-container">
+        <div class="score-container">0</div>
+        <div class="best-container">0</div>
+      </div>
+    </div>
+    <div class="game-container">
+      <div class="game-message">
+        <p></p>
+        <div class="lower">
+	        <a class="keep-playing-button">Keep going</a>
+          <a class="retry-button">Try again</a>
+        </div>
+      </div>
+
+      <div class="grid-container">
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+          <div class="grid-cell"></div>
+        </div>
+      </div>
+
+      <div class="tile-container">
+
+      </div>
+    </div>
+  </div>
+    </div>
+    <div class="col-2">
+      <div class="above-game">
+        <a class="restart-button">New Game</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="{% static 'tiles/js/bind_polyfill.js' %}"></script>
+  <script src="{% static 'tiles/js/classlist_polyfill.js' %}"></script>
+  <script src="{% static 'tiles/js/animframe_polyfill.js' %}"></script>
+  <script src="{% static 'tiles/js/keyboard_input_manager.js' %}"></script>
+  <script src="{% static 'tiles/js/html_actuator.js' %}"></script>
+  <script src="{% static 'tiles/js/grid.js' %}"></script>
+  <script src="{% static 'tiles/js/tile.js' %}"></script>
+  <script src="{% static 'tiles/js/local_storage_manager.js' %}"></script>
+  <script src="{% static 'tiles/js/game_manager.js' %}"></script>
+  <script src="{% static 'tiles/js/application.js' %}"></script>
+</body>
+{% endblock %}

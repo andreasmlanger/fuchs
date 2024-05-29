@@ -21,6 +21,7 @@ urlpatterns = [
     path('', include('safe.urls')),
     path('', include('scrape.urls')),
     path('', include('stocks.urls')),
+    path('', include('tiles.urls')),
     path('', include('trailer.urls')),
     path('', include('travel.urls')),
     path('', include('vocabulary.urls'))
