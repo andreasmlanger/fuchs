@@ -115,7 +115,7 @@ hr {
   border: none;
   border-bottom: 1px solid #d8d4d0;
   margin-top: 20px;
-  margin-bottom: 30px; }
+  margin-bottom: 20px; }
 
 .container {
   width: 500px;
@@ -537,14 +537,6 @@ hr {
 @media screen and (max-width: 520px) {
   html, body {
     font-size: 15px; }
-
-  body {
-    margin: 20px 0;
-    padding: 0 20px; }
-
-  h1.title {
-    font-size: 27px;
-    margin-top: 15px; }
 
   .container {
     width: 280px;
