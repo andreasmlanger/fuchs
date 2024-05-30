@@ -1,11 +1,9 @@
-@import url(fonts/clear-sans.css);
 html, body {
   margin: 0;
   padding: 0;
   background: #faf8ef;
   color: #776e65;
-  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-  font-size: 18px; }
+  font-size: 20px; }
 
 a:hover {
   text-decoration: none;
@@ -118,8 +116,9 @@ hr {
   margin-bottom: 20px; }
 
 .container {
-  width: 500px;
-  margin: 0 auto; }
+  width: 100%;
+  display: flex;
+  justify-content: center; }
 
 @-webkit-keyframes fade-in {
   0% {
@@ -340,13 +339,13 @@ hr {
     background: rgb(255, 80, 80); }
   .tile.tile-16 .tile-inner {
     color: rgb(200, 255, 255);
-    background: rgb(80, 255, 255); }
+    background: rgb(60, 255, 255); }
   .tile.tile-32 .tile-inner {
     color: rgb(255, 200, 200);
-    background: rgb(255, 40, 40); }
+    background: rgb(255, 0, 0); }
   .tile.tile-64 .tile-inner {
     color: rgb(200, 255, 255);
-    background: rgb(40, 255, 255); }
+    background: rgb(0, 255, 255); }
   .tile.tile-128 .tile-inner {
     color: #f9f6f2;
     background: #edcf72;
@@ -641,8 +640,8 @@ hr {
       clear: both; }
 
   .grid-cell {
-    width: 57.5px;
-    height: 57.5px;
+    width: 58px;
+    height: 58px;
     margin-right: 10px;
     float: left;
     border-radius: 3px;
