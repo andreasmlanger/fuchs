@@ -3,42 +3,41 @@
 {% block title %} Portfolio {% endblock %}
 
 {% block content %}
-<body>
-    <h4>Portfolio | <a href="/watchlist">Watchlist</a></h4>
-    <hr>
-    <!-- Add stock form -->
-    <div class="form-popup form-container" id="formContainer">
-        <form id="addStockForm" method="post">
-            {% csrf_token %}
-            <div class="row">
-                <div class="form-group input-container">
-                    <label for="name-input" class="col-form-label">Name</label>
-                    <input id="name-input" class="form-control" type="text" placeholder="e.g. Tesla">
-                </div>
-                <div class="form-group input-container">
-                    <label for="symbol-input" class="col-form-label">Ticker Symbol <span class="highlight" data-toggle="tooltip" data-placement="top" title="Find Symbol" onclick="searchYahoo()"><i class="fas fa-search"></i></span></label>
-                    <input id="symbol-input" class="form-control" type="text" placeholder="e.g. TL0.F">
-                </div>
-                <div class="form-group input-container">
-                    <label for="date-input" class="col-form-label">Order Date</label>
-                    <input id="date-input" class="form-control"  type="text" placeholder="date of order" onclick="openDatePicker()">
-                </div>
-                <div class="form-group input-container">
-                    <label for="price-input" class="col-form-label">Order Price</label>
-                    <input id="price-input" class="form-control" type="text" placeholder="price in €">
-                </div>
-                <div class="form-group input-container">
-                    <label for="volume-input" class="col-form-label">Volume</label>
-                    <input id="volume-input" class="form-control" type="text" placeholder="# of shares">
-                </div>
-                <div class="form-group btn-container">
-                    <button id="add-button" type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Add stock" ><i class="fas fa-plus"></i></button>
-                </div>
+<h4>Portfolio | <a href="/watchlist">Watchlist</a></h4>
+<hr>
+<!-- Add stock form -->
+<div class="form-popup form-container" id="formContainer">
+    <form id="addStockForm" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group input-container">
+                <label for="name-input" class="col-form-label">Name</label>
+                <input id="name-input" class="form-control" type="text" placeholder="e.g. Tesla">
             </div>
-        </form>
-    </div>
-    {% include "stocks/main.html" with stocks='portfolio' show_footer='true' col1=6 col2=6 %}
-</body>
+            <div class="form-group input-container">
+                <label for="symbol-input" class="col-form-label">Ticker Symbol <span class="highlight" data-toggle="tooltip" data-placement="top" title="Find Symbol" onclick="searchYahoo()"><i class="fas fa-search"></i></span></label>
+                <input id="symbol-input" class="form-control" type="text" placeholder="e.g. TL0.F">
+            </div>
+            <div class="form-group input-container">
+                <label for="date-input" class="col-form-label">Order Date</label>
+                <input id="date-input" class="form-control"  type="text" placeholder="date of order" onclick="openDatePicker()">
+            </div>
+            <div class="form-group input-container">
+                <label for="price-input" class="col-form-label">Order Price</label>
+                <input id="price-input" class="form-control" type="text" placeholder="price in €">
+            </div>
+            <div class="form-group input-container">
+                <label for="volume-input" class="col-form-label">Volume</label>
+                <input id="volume-input" class="form-control" type="text" placeholder="# of shares">
+            </div>
+            <div class="form-group btn-container">
+                <button id="add-button" type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Add stock" ><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+    </form>
+</div>
+{% include "stocks/main.html" with stocks='portfolio' show_footer='true' col1=6 col2=6 %}
+
 <script src="{% static 'stocks/index.js' %}"></script>
 <script>
     const CSFRtoken = '{{ csrf_token }}'

@@ -7,15 +7,14 @@
 {% endblock %}
 
 {% block content %}
-<body>
-    <h4>Events</h4>
-    <hr>
-    <div id="loader" class="loader"><div></div><div></div><div></div><div></div></div>
-    <div id="message"></div>
-    <div id="main">
-        {% include "events/main.html" %}
-    </div>
-</body>
+<h4>Events</h4>
+<hr>
+<div id="loader" class="loader"><div></div><div></div><div></div><div></div></div>
+<div id="message"></div>
+<div id="main">
+    {% include "events/main.html" %}
+</div>
+
 <script src="{% static 'events/index.js' %}"></script>
 <script>
     function remove(id) {

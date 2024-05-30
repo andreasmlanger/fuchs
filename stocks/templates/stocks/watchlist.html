@@ -3,30 +3,29 @@
 {% block title %} Watchlist {% endblock %}
 
 {% block content %}
-<body>
-    <h4><a href="/portfolio">Portfolio</a> | Watchlist</h4>
-    <hr>
-    <!-- Add stock form -->
-    <div class="form-popup form-container" id="formContainer">
-        <form id="addStockForm" method="post">
-            {% csrf_token %}
-            <div class="row">
-                <div class="form-group input-container">
-                    <label for="name-input" class="col-form-label">Name</label>
-                    <input id="name-input" class="form-control" type="text" placeholder="e.g. Tesla">
-                </div>
-                <div class="form-group input-container">
-                    <label for="symbol-input" class="col-form-label">Ticker Symbol <span class="highlight" data-toggle="tooltip" data-placement="top" title="Find Symbol" onclick="searchYahoo()"><i class="fas fa-search"></i></span></label>
-                    <input id="symbol-input" class="form-control" type="text" placeholder="e.g. TL0.F">
-                </div>
-                <div class="form-group btn-container">
-                    <button id="add-button" type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Add stock" ><i class="fas fa-plus"></i></button>
-                </div>
+<h4><a href="/portfolio">Portfolio</a> | Watchlist</h4>
+<hr>
+<!-- Add stock form -->
+<div class="form-popup form-container" id="formContainer">
+    <form id="addStockForm" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="form-group input-container">
+                <label for="name-input" class="col-form-label">Name</label>
+                <input id="name-input" class="form-control" type="text" placeholder="e.g. Tesla">
             </div>
-        </form>
-    </div>
-    {% include "stocks/main.html" with stocks='watchlist' show_footer='false' col1=7 col2=5 %}
-</body>
+            <div class="form-group input-container">
+                <label for="symbol-input" class="col-form-label">Ticker Symbol <span class="highlight" data-toggle="tooltip" data-placement="top" title="Find Symbol" onclick="searchYahoo()"><i class="fas fa-search"></i></span></label>
+                <input id="symbol-input" class="form-control" type="text" placeholder="e.g. TL0.F">
+            </div>
+            <div class="form-group btn-container">
+                <button id="add-button" type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Add stock" ><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+    </form>
+</div>
+{% include "stocks/main.html" with stocks='watchlist' show_footer='false' col1=7 col2=5 %}
+
 <script src="{% static 'stocks/index.js' %}"></script>
 <script>
     const CSFRtoken = '{{ csrf_token }}'

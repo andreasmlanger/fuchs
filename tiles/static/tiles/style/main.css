@@ -1,14 +1,14 @@
+@import url(fonts/clear-sans.css);
 html, body {
   margin: 0;
   padding: 0;
   background: #faf8ef;
   color: #776e65;
-  font-size: 20px; }
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  font-size: 18px; }
 
-a:hover {
-  text-decoration: none;
-  color: white;
-}
+body {
+  margin: 80px 0; }
 
 .heading:after {
   content: "";
@@ -113,12 +113,11 @@ hr {
   border: none;
   border-bottom: 1px solid #d8d4d0;
   margin-top: 20px;
-  margin-bottom: 20px; }
+  margin-bottom: 30px; }
 
 .container {
-  width: 100%;
-  display: flex;
-  justify-content: center; }
+  width: 500px;
+  margin: 0 auto; }
 
 @-webkit-keyframes fade-in {
   0% {
@@ -139,6 +138,7 @@ hr {
   100% {
     opacity: 1; } }
 .game-container {
+  margin-top: 40px;
   position: relative;
   padding: 15px;
   cursor: default;
@@ -330,22 +330,24 @@ hr {
     font-size: 55px; }
   .tile.tile-2 .tile-inner {
     color: rgb(255, 200, 200);
-    background: rgb(255, 120, 120); }
+    background: rgb(255, 120, 120);
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255, 0); }
   .tile.tile-4 .tile-inner {
     color: rgb(225, 255, 255);
-    background: rgb(120, 255, 255); }
+    background: rgb(120, 255, 255);
+    box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0), inset 0 0 0 1px rgba(255, 255, 255, 0); }
   .tile.tile-8 .tile-inner {
     color: rgb(255, 200, 200);
-    background: rgb(255, 80, 80); }
+    background: rgb(255, 0, 0); }
   .tile.tile-16 .tile-inner {
     color: rgb(200, 255, 255);
-    background: rgb(60, 255, 255); }
-  .tile.tile-32 .tile-inner {
-    color: rgb(255, 200, 200);
-    background: rgb(255, 0, 0); }
-  .tile.tile-64 .tile-inner {
-    color: rgb(200, 255, 255);
     background: rgb(0, 255, 255); }
+  .tile.tile-32 .tile-inner {
+    color: #f9f6f2;
+    background: #f67c5f; }
+  .tile.tile-64 .tile-inner {
+    color: #f9f6f2;
+    background: #f65e3b; }
   .tile.tile-128 .tile-inner {
     color: #f9f6f2;
     background: #edcf72;
@@ -528,7 +530,7 @@ hr {
   line-height: 42px;
   display: block;
   text-align: center;
-  float: left; }
+  float: right; }
 
 .game-explanation {
   margin-top: 50px; }
@@ -536,6 +538,14 @@ hr {
 @media screen and (max-width: 520px) {
   html, body {
     font-size: 15px; }
+
+  body {
+    margin: 20px 0;
+    padding: 0 20px; }
+
+  h1.title {
+    font-size: 27px;
+    margin-top: 15px; }
 
   .container {
     width: 280px;
@@ -640,8 +650,8 @@ hr {
       clear: both; }
 
   .grid-cell {
-    width: 58px;
-    height: 58px;
+    width: 57.5px;
+    height: 57.5px;
     margin-right: 10px;
     float: left;
     border-radius: 3px;

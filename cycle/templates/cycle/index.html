@@ -10,11 +10,9 @@
 {% endblock %}
 
 {% block content %}
-<body>
-    <h4><span class="pointer category" onclick="changeRouteType(this, 'planned')">Planned</span> | <span class="pointer category" style="color: gray" onclick="changeRouteType(this, 'done')">Done</span></h4>
-    <hr>
-    <div id="main">
-        {% include "cycle/main.html" %}
-    </div>
-</body>
+<h4><span class="pointer category" onclick="changeRouteType(this, 'planned')">Planned</span> | <span class="pointer category" style="color: gray" onclick="changeRouteType(this, 'done')">Done</span></h4>
+<hr>
+<div id="main">
+    {% include "cycle/main.html" %}
+</div>
 {% endblock %}

@@ -7,29 +7,28 @@
 {% endblock %}
 
 {% block content %}
-<body>
-    <h4><a href="/vocabulary">Vocabulary</a> | New</h4>
-    <hr>
-    <div style="margin: 0px 15%">
-        {% for lang in languages %}
-            <img id="flag-{{lang}}" data-language='{{lang}}' class="flag" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')">
-        {% endfor %}
-        <br>
-        <br>
-        <p>Add new vocabulary</p>
-        <form id="addVocabForm" method="post" novalidate>
-            {% csrf_token %}
-            <div class="input-group mb-3">
-                <input id="word-1" style="font-size: 20px" name="word-1" type="text" class="form-control" autocomplete="off" placeholder="Japanese" required autofocus>
-                <input id="word-2" style="font-size: 20px" name="word-2" type="text" class="form-control" autocomplete="off" placeholder="Translation" required>
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Add"><i class="fa-solid fa-plus"></i></button>
-                </div>
+<h4><a href="/vocabulary">Vocabulary</a> | New</h4>
+<hr>
+<div style="margin: 0px 15%">
+    {% for lang in languages %}
+        <img id="flag-{{lang}}" data-language='{{lang}}' class="flag" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')">
+    {% endfor %}
+    <br>
+    <br>
+    <p>Add new vocabulary</p>
+    <form id="addVocabForm" method="post" novalidate>
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            <input id="word-1" style="font-size: 20px" name="word-1" type="text" class="form-control" autocomplete="off" placeholder="Japanese" required autofocus>
+            <input id="word-2" style="font-size: 20px" name="word-2" type="text" class="form-control" autocomplete="off" placeholder="Translation" required>
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-dark" data-toggle="tooltip" data-placement="top" title="Add"><i class="fa-solid fa-plus"></i></button>
             </div>
-        </form>
-        <div id="message"></div>
-    </div>
-</body>
+        </div>
+    </form>
+    <div id="message"></div>
+</div>
+
 <script src="{% static 'vocabulary/index.js' %}"></script>
 <script src="{% static 'vocabulary/wanakana.min.js' %}"></script>
 <script>

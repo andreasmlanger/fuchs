@@ -7,13 +7,11 @@
 {% endblock %}
 
 {% block content %}
-<body>
-    {% if user.is_authenticated %}
-        <h4><a href="/blog">Blog</a></h4>
-        <hr>
-    {% endif %}
-    <div id="main">
-        {% include "blog/main.html" %}
-    </div>
-</body>
+{% if user.is_authenticated %}
+    <h4><a href="/blog">Blog</a></h4>
+    <hr>
+{% endif %}
+<div id="main">
+    {% include "blog/main.html" %}
+</div>
 {% endblock %}

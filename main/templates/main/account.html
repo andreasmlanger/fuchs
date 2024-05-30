@@ -3,100 +3,98 @@
 {% block title %} Account {% endblock %}
 
 {% block content %}
-<body>
-    <h4>Account</h4>
-    <hr>
-    {% csrf_token %}
-    <div class="row">
-        <div class="col-2">
-            <br>
-            <input type="image" src="{% if avatar %} data:image/png;base64, {{avatar}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail"/>
-            <div class="text-center">
-                <a class="highlight" style="font-size: 22px;" href="/blood" data-toggle="tooltip" data-placement="left" title="Blood"><i class="fa-solid fa-laptop-medical"></i></a>
-            </div>
-        </div>
-        <div class="col-1">
-            {% if weather_forecast %}
-                <div class="text-right" style="margin-top: 240px;">
-                    <a href="weather"><img src="{% static weather_forecast.icon_static_url %}" alt="{{ weather_forecast.description }}" width="48px" data-toggle="tooltip" data-placement="left" title="{{weather_forecast.description}}, {{weather_forecast.temperature}}°C"></a>
-                </div>
-            {% endif %}
-        </div>
-        <div class="col-8">
-            <form class="form" action="#" method="post" id="registrationForm" enctype="multipart/form-data">
-                <input name="avatar" type="file" class="file-upload" style="display: none"/>
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <h4><label for="first_name">First name</label></h4>
-                            <input tabindex=1 type="text" class="form-control" name="first_name" id="first_name" value="{{first_name}}" placeholder="first name">
-                         </div>
-                        <div class="form-group">
-                            <h4><label for="email">Email</label></h4>
-                            <input tabindex=3 type="email" class="form-control" name="email" id="email" value="{{email}}" placeholder="you@email.com">
-                        </div>
-                        <div class="form-group">
-                            <h4><label for="city">City</label></h4>
-                            <input tabindex=4 type="text" class="form-control" name="city" id="city" value="{{city}}" placeholder="your city">
-                        </div>
-                        <p style="margin-top: 50px">You can change your password <a href="password_change">here</a>.</p>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <h4><label for="last_name">Last name</label></h4>
-                            <input tabindex=2 type="text" class="form-control" name="last_name" id="last_name" value="{{last_name}}" placeholder="last name">
-                        </div>
-                        <div class="form-group">
-                            <h4><label for="username">Username</label></h4>
-                            <input type="text" class="form-control" name="username" id="username" placeholder="{{user_name}}" disabled>
-                        </div>
-                        <div class="form-group">
-                            <h4 style="margin-top: 12px">Notifications</h4>
-                            {% for app, values in apps.items %}
-                                <div style="margin-left: 30px">
-                                    <input tabindex=5 id="{{app}}_notification" name="{{app}}_notification" class="form-check-input" type="checkbox" {% if values.notification %} checked {% endif %}>
-                                    <label class="form-check-label" for="{{app}}_notification">{{values.description}}</label>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-3">
-                        <div class="form-group">
-                            {% csrf_token %}
-                            <button class="btn btn-success" type="submit">Save</button>
-                            <!--<button class="btn" type="reset">Reset</button>-->
-                        </div>
-                    </div>
-                    <div class="col-8">
-                        {% csrf_token %}
-                        {% if messages %}
-                        <div class="messages">
-                            {% for message in messages %}
-                                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
-                                    {{ message }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="col-1">
-                        <div class="form-group">
-                            {% csrf_token %}
-                            {% if user.is_superuser %}
-                                <span class="highlight" onclick="vacuumDatabase()" data-toggle="tooltip" data-placement="left" title="Vacuum Database"><i class="fa-solid fa-snowplow"></i></span>
-                            {% else %}
-                                <span class="highlight" onclick="deleteAccount()" data-toggle="tooltip" data-placement="left" title="Delete Account"><i class="fas fa-skull highlight"></i></span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </form>
+<h4>Account</h4>
+<hr>
+{% csrf_token %}
+<div class="row">
+    <div class="col-2">
+        <br>
+        <input type="image" src="{% if avatar %} data:image/png;base64, {{avatar}} {% else %} {% static 'main/avatar.png' %} {% endif %}" class="avatar rounded-circle img-thumbnail"/>
+        <div class="text-center">
+            <a class="highlight" style="font-size: 22px;" href="/blood" data-toggle="tooltip" data-placement="left" title="Blood"><i class="fa-solid fa-laptop-medical"></i></a>
         </div>
     </div>
-</body>
+    <div class="col-1">
+        {% if weather_forecast %}
+            <div class="text-right" style="margin-top: 240px;">
+                <a href="weather"><img src="{% static weather_forecast.icon_static_url %}" alt="{{ weather_forecast.description }}" width="48px" data-toggle="tooltip" data-placement="left" title="{{weather_forecast.description}}, {{weather_forecast.temperature}}°C"></a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-8">
+        <form class="form" action="#" method="post" id="registrationForm" enctype="multipart/form-data">
+            <input name="avatar" type="file" class="file-upload" style="display: none"/>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <h4><label for="first_name">First name</label></h4>
+                        <input tabindex=1 type="text" class="form-control" name="first_name" id="first_name" value="{{first_name}}" placeholder="first name">
+                     </div>
+                    <div class="form-group">
+                        <h4><label for="email">Email</label></h4>
+                        <input tabindex=3 type="email" class="form-control" name="email" id="email" value="{{email}}" placeholder="you@email.com">
+                    </div>
+                    <div class="form-group">
+                        <h4><label for="city">City</label></h4>
+                        <input tabindex=4 type="text" class="form-control" name="city" id="city" value="{{city}}" placeholder="your city">
+                    </div>
+                    <p style="margin-top: 50px">You can change your password <a href="password_change">here</a>.</p>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <h4><label for="last_name">Last name</label></h4>
+                        <input tabindex=2 type="text" class="form-control" name="last_name" id="last_name" value="{{last_name}}" placeholder="last name">
+                    </div>
+                    <div class="form-group">
+                        <h4><label for="username">Username</label></h4>
+                        <input type="text" class="form-control" name="username" id="username" placeholder="{{user_name}}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <h4 style="margin-top: 12px">Notifications</h4>
+                        {% for app, values in apps.items %}
+                            <div style="margin-left: 30px">
+                                <input tabindex=5 id="{{app}}_notification" name="{{app}}_notification" class="form-check-input" type="checkbox" {% if values.notification %} checked {% endif %}>
+                                <label class="form-check-label" for="{{app}}_notification">{{values.description}}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-3">
+                    <div class="form-group">
+                        {% csrf_token %}
+                        <button class="btn btn-success" type="submit">Save</button>
+                        <!--<button class="btn" type="reset">Reset</button>-->
+                    </div>
+                </div>
+                <div class="col-8">
+                    {% csrf_token %}
+                    {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-1">
+                    <div class="form-group">
+                        {% csrf_token %}
+                        {% if user.is_superuser %}
+                            <span class="highlight" onclick="vacuumDatabase()" data-toggle="tooltip" data-placement="left" title="Vacuum Database"><i class="fa-solid fa-snowplow"></i></span>
+                        {% else %}
+                            <span class="highlight" onclick="deleteAccount()" data-toggle="tooltip" data-placement="left" title="Delete Account"><i class="fas fa-skull highlight"></i></span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
     function createInput(name) {

@@ -22,4 +22,8 @@
     text-decoration: none;
   }
 
+  .main-content {
+    margin: 15px min(10%, 90px);
+  }
+
 } /* end @media */

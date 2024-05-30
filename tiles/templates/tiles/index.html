@@ -1,28 +1,37 @@
-{% extends 'main/base.html' %}
+<!DOCTYPE html>
 {% load static %}
-{% block title %} Tiles {% endblock %}
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>2048</title>
 
-{% block header %}
-<link rel="stylesheet" href="{% static 'tiles/style/main.css' %}">
-<meta name="HandheldFriendly" content="True">
-<meta name="MobileOptimized" content="320">
-<meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
-{% endblock %}
+  <link rel="stylesheet" href="{% static 'tiles/style/main.css' %}">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="meta/apple-touch-icon.png">
+  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone 5+ -->
+  <link rel="apple-touch-startup-image" href="meta/apple-touch-startup-image-640x920.png"  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"> <!-- iPhone, retina -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-{% block content %}
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
 <body>
-  <div class="above-game">
-    <a class="restart-button">New Game</a>
-  </div>
-  <hr>
   <div class="container">
-    <div class="heading" style="display: none;">
+    <div class="heading">
       <h1 class="title">2048</h1>
       <div class="scores-container">
         <div class="score-container">0</div>
         <div class="best-container">0</div>
       </div>
     </div>
+
+    <div class="above-game">
+      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+      <a class="restart-button">New Game</a>
+    </div>
+
     <div class="game-container">
       <div class="game-message">
         <p></p>
@@ -76,4 +85,4 @@
   <script src="{% static 'tiles/js/game_manager.js' %}"></script>
   <script src="{% static 'tiles/js/application.js' %}"></script>
 </body>
-{% endblock %}
+</html>
