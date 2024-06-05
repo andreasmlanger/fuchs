@@ -30,6 +30,11 @@ def get_keywords(user):
     keywords_urlaubspiraten = user.urlaubspiraten.all().values(*values).order_by('keyword')
     for k in keywords_urlaubspiraten:
         k['website'] = 'urlaubspiraten'
+        if k['keyword'].startswith('~'):
+            k['blacklist'] = 1  # blacklist
+            k['keyword'] = k['keyword'][1:]  # strip ~
+        else:
+            k['blacklist'] = 0  # whitelist
     return list(keywords_kleinanzeigen) + list(keywords_urlaubspiraten)
 
 

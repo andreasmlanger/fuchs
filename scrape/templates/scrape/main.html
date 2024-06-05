@@ -1,6 +1,6 @@
 {% for k in keywords %}
     {% if k.website == website %}
-        <div id=gridItem{{k.id}} class="grid-item {{website}} zoom" data-keyword="{{k.keyword}}" style="background-color: {% if website == 'kleinanzeigen' %} #345995 {% elif k.keyword == 'World' %} #87255B {% else %} #4C8577 {% endif %}">
+        <div id=gridItem{{k.id}} class="grid-item {{website}} zoom" data-keyword="{{k.keyword}}" style="background-color: {% if website == 'kleinanzeigen' %} #345995 {% elif k.blacklist %} #A4303F {% else %} #4C8577 {% endif %}">
             <span style="width: 140px">{% if k.website == 'kleinanzeigen' %}<a href="{{k.url}}" target=”_blank”>{{k.keyword}}</a>{% else %} {{k.keyword}} {% endif %}</span><span style="width: 30px; text-align: right"><i class="highlight fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete" onclick="deleteKeyword({{k.id}})"></i></span>
         </div>
     {% endif %}

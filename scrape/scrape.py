@@ -109,12 +109,13 @@ def scrape_urlaubspiraten(keywords):
     posts = find_urlaubspiraten_posts(json_obj)
     items = []
     first_datetime = None  # will be set if there's a new post
-    world_in_keywords = 'World' in [k.keyword for k in keywords]
-    keyword_list = list(keywords)  # list to store keywords - will shrink during loop
+    keyword_list = list(keywords)
+    whitelist = [k for k in keyword_list if not k.keyword.startswith('~')]  # will shrink during loop
+    blacklist = [k for k in keyword_list if k.keyword.startswith('~')]
     for x in posts:
         publication_datetime = datetime.fromisoformat(x['sys']['publishedAt'][:-1])
-        keywords_list = [k for k in keyword_list if not k.latest_datetime or k.latest_datetime < publication_datetime]
-        if len(keywords_list) == 0:
+        whitelist = [k for k in whitelist if k.latest_datetime and k.latest_datetime < publication_datetime]
+        if len(whitelist) == 0:
             break  # we're done
         if not first_datetime:
             first_datetime = publication_datetime
@@ -125,8 +126,14 @@ def scrape_urlaubspiraten(keywords):
                 'Price': x['pricing']['amount'] if x['pricing'] else None,
                 'Url': f'https://www.urlaubspiraten.de/fluege/{x["slug"]}',
                 }
-        if world_in_keywords or any(k.keyword in item['Title'] + item['Subtitle'] for k in keyword_list):
-            items.append(item)
+
+        # Check if title contains blacklisted keyword
+        if any(k.keyword in item['Title'] for k in blacklist):
+            if any(k.keyword in item['Title'] + item['Subtitle'] for k in whitelist):
+                pass  # whitelist can overrule blacklist
+            else:
+                continue
+        items.append(item)
     if first_datetime:
         keywords.update(latest_datetime=first_datetime)
     return items
