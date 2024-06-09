@@ -128,7 +128,7 @@ def scrape_urlaubspiraten(keywords):
                 }
 
         # Check if title contains blacklisted keyword
-        if any(k.keyword in item['Title'] for k in blacklist):
+        if any(k.keyword[1:] in item['Title'] for k in blacklist):
             if any(k.keyword in item['Title'] + item['Subtitle'] for k in whitelist):
                 pass  # whitelist can overrule blacklist
             else:
