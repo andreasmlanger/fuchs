@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render
 from main.utils import decode_bytes, get_avatar, uploaded_image_to_base64
 from .models import Book
@@ -6,6 +7,9 @@ from .models import Book
 
 @login_required
 def index(request):
+    if request.method == 'POST' and request.POST.get('task') == 'remove':
+        request.user.books.get(epub_id=request.POST.get('epub_id')).delete()
+        return JsonResponse({})
     books = get_books(request.user)
     return render(request, 'books/index.html', {'books': books, 'avatar': get_avatar(request)})
 

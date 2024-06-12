@@ -13,7 +13,7 @@
     {% include "books/main.html" %}
 </div>
 <div id="message"></div>
-<div id="modal" class="modal">
+<div id="modal" class="modal-new-book">
     <span class="close-btn" onclick="closeModal()">&times;</span>
     <div id="dropArea" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)" ondragleave="dragLeaveHandler(event)">
         <input type="file" id="coverInput" accept="image/*" />
@@ -140,6 +140,30 @@
         document.querySelectorAll('.input-container').forEach(function(container) {
             container.style.display = x;
         });
+    }
+
+    function deleteItem(element, epub_id) {
+        event.stopPropagation();
+        const title = "Are you sure you want to remove this book?";
+        showModalConfirm(title, function() {
+            const gridItem = element.parentElement;
+            gridItem.remove();
+            let data = new FormData();
+            data.append('epub_id', epub_id);
+            data.append('task', 'remove');
+            sendToBackend(data);
+        });
+    }
+
+    function sendToBackend(data) {
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: data,
+        })
     }
 </script>
 

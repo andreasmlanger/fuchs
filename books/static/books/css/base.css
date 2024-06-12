@@ -40,7 +40,7 @@
     background-color: #F2F4FF;
   }
 
-  .modal {
+  .modal-new-book {
     display: none;
     position: fixed;
     top: 0;
@@ -120,6 +120,27 @@
 
   #message {
     margin-top: 25px;
+  }
+
+  .delete-button {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: gray;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+    transition: opacity 0.1s;
+    opacity: 0.5;
+  }
+
+  .grid-item:hover .delete-button {
+    display: block;
+  }
+
+  .delete-button:hover {
+    opacity: 1;
   }
 
 } /* end @media */
