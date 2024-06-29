@@ -84,8 +84,8 @@ function getLanguageName() {
             return "Portuguese";
         case 'jp':
             return "Japanese";
-        case 'de':
-            return "German";
+        case 'kz':
+            return "Kazakh";
     }
 }
 

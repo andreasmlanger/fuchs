@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-LANGUAGES = ['jp', 'pt', 'en', 'fr', 'es']
+LANGUAGES = ['jp', 'kz', 'pt', 'en', 'fr', 'es']
 
 WAITING_TIME = {
     0: timedelta(hours=0),
