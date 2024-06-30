@@ -90,7 +90,9 @@ function getLanguageName() {
 }
 
 function deAccent(string) {
-    return string.normalize('NFD').replace(/\p{Diacritic}/gu, "")
+    let deAccentedString = string.normalize('NFD').replace(/\p{Diacritic}/gu, "");
+    deAccentedString = deAccentedString.replace('ı', 'i');
+    return deAccentedString;
 }
 
 const randomItem = arr => arr.splice((Math.random() * arr.length) | 0, 1);
