@@ -21,7 +21,7 @@
         </form>
         <span style="margin-top: 5px; margin-left: 20px">
             {% for lang in languages %}
-                <img id="flag-{{lang}}" data-language='{{lang}}' class="flag" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')">
+                <img id="flag-{{lang}}" data-language='{{lang}}' class="flag highlight" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')" draggable="false">
             {% endfor %}
         </span>
     </div>

@@ -11,7 +11,7 @@
 <hr>
 <div style="margin: 0px 15%">
     {% for lang in languages %}
-        <img id="flag-{{lang}}" data-language='{{lang}}' class="flag" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')">
+        <img id="flag-{{lang}}" data-language='{{lang}}' class="flag highlight" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" style="{% if lang != default_language %} filter: grayscale(80%) {% endif %}" height="30px" onclick="changeLanguage('{{lang}}')" draggable="false">
     {% endfor %}
     <br>
     <br>
@@ -27,6 +27,7 @@
         </div>
     </form>
     <div id="message"></div>
+    {% include "vocabulary/characters.html" %}
 </div>
 
 <script src="{% static 'vocabulary/index.js' %}"></script>
@@ -95,6 +96,10 @@
 
     function updatePage() {
         document.getElementsByName('word-1')[0].placeholder = getLanguageName();
+    }
+
+    function toggleSpecialCharacterButtons() {
+        document.getElementById('kz-characters').style.display = (foreignLanguage == 'kz') ? 'block' : 'none';
     }
 
     $(document).ready(function(){

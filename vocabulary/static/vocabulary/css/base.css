@@ -36,10 +36,6 @@
     margin-right: 10px;
   }
 
-  .flag:hover {
-    cursor: pointer;
-  }
-
   .tooltip {
     pointer-events: none;
   }

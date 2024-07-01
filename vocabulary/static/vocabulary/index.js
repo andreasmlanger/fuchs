@@ -58,6 +58,11 @@ function changeLanguage(lang) {
         }
         document.getElementById('word-2').value = '';
     }
+    toggleSpecialCharacterButtons();
+}
+
+function toggleSpecialCharacterButtons() {
+    // default does nothing
 }
 
 function toggleHiraganaInput(input, enable) {

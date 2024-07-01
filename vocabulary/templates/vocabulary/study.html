@@ -17,7 +17,7 @@
         <div class="col-8">
             <h2>
                 {% for lang in languages %}
-                    <img id="flag-{{lang}}" class="flag" style="margin-right: 10px; {% if vocab.0.language != lang %} display: none {% endif %}" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" height="40px">
+                    <img id="flag-{{lang}}" class="flag" style="margin-right: 10px; {% if vocab.0.language != lang %} display: none {% endif %}" src="{% static 'vocabulary/flags/'|add:lang|add:'.png' %}" height="40px" draggable="false">
                 {% endfor %}
                 <span id="word_1">{{vocab.0.word_1}}</span><span id="word_2" style="margin-left: 10px; color: white; display: {% if vocab.0.level < 2 %} inline-block {% else %} none {% endif %}" class="badge bg-info" data-toggle="tooltip" data-placement="right" title="{{vocab.0.word_2}}" ><i class="fa-solid fa-question"></i></span>
             </h2>
@@ -32,13 +32,7 @@
                 </div>
             </form>
             <div id="message" style="font-size: 20px"></div>
-            <div id='kz-characters' class="container mt-4" style="display: none;">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-light btn-round" onclick="insertCharacter('ğ', this)">ğ</button>
-                    <button type="button" class="btn btn-light btn-round" onclick="insertCharacter('ı', this)">ı</button>
-                    <button type="button" class="btn btn-light btn-round" onclick="insertCharacter('ï', this)">ï</button>
-                </div>
-            </div>
+            {% include "vocabulary/characters.html" %}
         </div>
         <div class="col-2">
             <h2 style="text-align: center"><i class="fa-solid fa-clipboard-list" data-toggle="tooltip" data-placement="top" title="Remaining" ></i> <span id="remaining">{{vocab|length}}</span></h2>
@@ -162,15 +156,8 @@
         $('#submit-button').prop('disabled', e.target.value.trim().length == 0);
     })
 
-    function insertCharacter(character, button) {
-        let inputField = document.getElementById('word-input');
-        inputField.value += character;
-        inputField.focus();
-        $('#submit-button').prop('disabled', false);
-    }
-
     function toggleSpecialCharacterButtons() {
-        document.getElementById('kz-characters').style.display = (activeWord.language == 'kz' & activeWord.level % 2 === 0) ? 'block' : 'none';
+        document.getElementById('kz-characters').style.display = (activeWord.language == 'kz' & activeWord.level % 2 === 1) ? 'block' : 'none';
     }
 
     document.addEventListener("DOMContentLoaded", function() {
