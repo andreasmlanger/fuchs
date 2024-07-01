@@ -32,6 +32,13 @@
                 </div>
             </form>
             <div id="message" style="font-size: 20px"></div>
+            <div id='kz-characters' class="container mt-4" style="display: none;">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-light btn-round" onclick="insertCharacter('ğ', this)">ğ</button>
+                    <button type="button" class="btn btn-light btn-round" onclick="insertCharacter('ı', this)">ı</button>
+                    <button type="button" class="btn btn-light btn-round" onclick="insertCharacter('ï', this)">ï</button>
+                </div>
+            </div>
         </div>
         <div class="col-2">
             <h2 style="text-align: center"><i class="fa-solid fa-clipboard-list" data-toggle="tooltip" data-placement="top" title="Remaining" ></i> <span id="remaining">{{vocab|length}}</span></h2>
@@ -52,6 +59,7 @@
 
     $("#submitWordForm").on('submit', function(e){
         e.preventDefault();
+        document.getElementById('kz-characters').style.display = 'none';
         if (submitted) {
             displayNextWord();
         } else {
@@ -113,6 +121,7 @@
             displayCorrectFlag(activeWord.language);
             enableTooltips();
             toggleHiragana();
+            toggleSpecialCharacterButtons();
         } else {
             document.getElementById('main').innerHTML = "Session completed!";
         }
@@ -153,8 +162,20 @@
         $('#submit-button').prop('disabled', e.target.value.trim().length == 0);
     })
 
+    function insertCharacter(character, button) {
+        let inputField = document.getElementById('word-input');
+        inputField.value += character;
+        inputField.focus();
+        $('#submit-button').prop('disabled', false);
+    }
+
+    function toggleSpecialCharacterButtons() {
+        document.getElementById('kz-characters').style.display = (activeWord.language == 'kz' & activeWord.level % 2 === 0) ? 'block' : 'none';
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
         toggleHiragana();
+        toggleSpecialCharacterButtons();
     });
 </script>
 
