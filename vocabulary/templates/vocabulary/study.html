@@ -157,7 +157,8 @@
     })
 
     function toggleSpecialCharacterButtons() {
-        document.getElementById('kz-characters').style.display = (activeWord.language == 'kz' & activeWord.level % 2 === 1) ? 'block' : 'none';
+        document.getElementById('chars-kz').style.display = (activeWord.language == 'kz' & activeWord.level % 2 === 1) ? 'block' : 'none';
+        document.getElementById('chars-pt').style.display = (activeWord.language == 'pt' & activeWord.level % 2 === 1) ? 'block' : 'none';
     }
 
     document.addEventListener("DOMContentLoaded", function() {
