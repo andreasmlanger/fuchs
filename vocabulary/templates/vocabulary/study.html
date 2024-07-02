@@ -53,7 +53,8 @@
 
     $("#submitWordForm").on('submit', function(e){
         e.preventDefault();
-        document.getElementById('kz-characters').style.display = 'none';
+        document.getElementById('chars-kz').style.display = 'none';
+        document.getElementById('chars-pt').style.display = 'none';
         if (submitted) {
             displayNextWord();
         } else {
